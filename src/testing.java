@@ -4,6 +4,8 @@ public class testing {
         System.out.println("there once was a chinese restaurant");
         System.out.println("and i bought i loaf of bread");
         System.out.println("the waiter didn't know my name");
+        System.out.println("dylan is the big gay");
+
     }
     public static int difference(int num1, int num2){
         return num1-num2;
