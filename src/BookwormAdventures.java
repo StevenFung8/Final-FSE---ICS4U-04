@@ -75,6 +75,6 @@ class GamePanel extends JPanel {
             destx = e.getX();
             desty = e.getY();
         }
-    }//////////////////////////////My pussy is thick afff
+    }//////////////////////////////My pussy is thick affff
 }
 
