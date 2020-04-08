@@ -1,15 +1,23 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 public class BookwormAdventures extends JFrame {
     Timer myTimer;
+    private Image bookwormIcon;
     GamePanel game;
+    public static void main(String[] arguments) {
+        BookwormAdventures frame = new BookwormAdventures();
+    }
     public BookwormAdventures() {
         super("Bookworm Adventures");
+        Image icon = Toolkit.getDefaultToolkit().getImage("bookwormIcon.png");
+        setIconImage(icon);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800,650);
 
@@ -31,23 +39,16 @@ public class BookwormAdventures extends JFrame {
         }
     }
 
-    public static void main(String[] arguments) {
-        BookwormAdventures frame = new BookwormAdventures();
-    }
 }
 
-class GamePanel extends JPanel {
-    private int destx,desty,boxx,boxy;
+class GamePanel extends JPanel implements KeyListener {
+
     public boolean ready=false;
     private boolean gotName=false;
 
     public GamePanel(){
-            addMouseListener(new clickListener());
-            boxx=200;
-            boxy=200;
-            destx=500;
-            desty=200;
-            setSize(800,600);
+        addMouseListener(new clickListener());
+        setSize(800,600);
     }
 
     public void addNotify() {
@@ -60,11 +61,22 @@ class GamePanel extends JPanel {
         g.setColor(new Color(222,222,255));
         g.fillRect(0,0,getWidth(),getHeight());
         g.setColor(new Color(255,111,111));
-        g.fillOval(destx,desty,10,10);
         g.setColor(Color.green);
-        g.fillRect(boxx,boxy,20,20);
         g.fillRect(300,300,60,60);
     }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
     class clickListener implements MouseListener {
         // ------------ MouseListener ------------------------------------------
         public void mouseEntered(MouseEvent e) {}
@@ -72,8 +84,8 @@ class GamePanel extends JPanel {
         public void mouseReleased(MouseEvent e) {}
         public void mouseClicked(MouseEvent e){}
         public void mousePressed(MouseEvent e){
-            destx = e.getX();
-            desty = e.getY();
+            //destx = e.getX();
+            //desty = e.getY();
         }
     }
 }
