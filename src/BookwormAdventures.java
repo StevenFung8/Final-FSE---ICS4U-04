@@ -19,7 +19,7 @@ public class BookwormAdventures extends JFrame {
     private Image bookwormIcon;
     GamePanel game;
 
-    public static void main(String[] arguments) throws IOException{
+    publice static void main(String[] arguments) throws IOException{
         BookwormAdventures frame = new BookwormAdventures();
         //System.out.println(words.toString());
     }
