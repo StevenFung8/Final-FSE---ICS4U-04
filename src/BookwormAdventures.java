@@ -28,7 +28,7 @@ public class BookwormAdventures extends JFrame {
         Image icon = Toolkit.getDefaultToolkit().getImage("bookwormIcon.png");
         setIconImage(icon);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1280,720);
+        setSize(1280,820);
 
         myTimer = new Timer(10, new TickListener());	 // trigger every 100 ms
         myTimer.start();
@@ -58,7 +58,9 @@ class GamePanel extends JPanel implements KeyListener {
     private Letters letters;
     private int mx,my;
     private Rectangle[] letterSlots = new Rectangle[16];
+    private boolean[] letterSlotsCondition = new boolean[16];
     private ArrayList<String> alphabet;
+    private Rectangle resetButton;
     public GamePanel() throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
@@ -70,6 +72,10 @@ class GamePanel extends JPanel implements KeyListener {
                 letterSlots[rectCounter] = new Rectangle(x,y,120,120);
                 rectCounter++;
             }
+        }
+        resetButton = new Rectangle(400,720,480,100);
+        for(int i = 0; i<16;i++){
+            letterSlotsCondition[i] = true;
         }
         alphabet = letters.random16letters();
 
@@ -84,7 +90,7 @@ class GamePanel extends JPanel implements KeyListener {
 
 
     public void paintComponent(Graphics g){
-
+        System.out.println(mx + "," + my);
         int letterSlotCounter = 0;
         g.setColor(new Color(255,255,255));
         if (level == 1){
@@ -94,12 +100,31 @@ class GamePanel extends JPanel implements KeyListener {
         g.fillRect(0,240,1280,20);
         g.fillRect(400,240,10,480);
         g.fillRect(880,240,10,480);
-        for (Rectangle r : letterSlots){
-            g.drawRect(r.x,r.y,r.width,r.height);
-        }
         for (String s : alphabet){
-            g.drawImage(Letters.getImage(s),letterSlots[letterSlotCounter].x,letterSlots[letterSlotCounter].y,this);
+            g.drawImage(Letters.getImage(s),letterSlots[letterSlotCounter].x + 20,letterSlots[letterSlotCounter].y+25,this);
             letterSlotCounter++;
+        }
+        for (int i = 0; i<16;i++){
+            if(letterSlotsCondition[i]) {
+                g.drawRect(letterSlots[i].x, letterSlots[i].y, letterSlots[i].width, letterSlots[i].height);
+            }
+            else{
+                g.setColor(Color.WHITE);
+                g.fillRect(letterSlots[i].x, letterSlots[i].y, letterSlots[i].width, letterSlots[i].height);
+            }
+        }
+        for(int i = 0; i<16;i++){
+            if (letterSlots[i].contains(mx,my)){
+                g.setColor(Color.WHITE);
+                g.fillRect(letterSlots[i].x,letterSlots[i].y,letterSlots[i].width,letterSlots[i].height);
+                letterSlotsCondition[i] = false;
+            }
+        }
+        g.drawRect(resetButton.x,resetButton.y,resetButton.width+10,resetButton.height);
+        if(resetButton.contains(mx,my)){
+            for(int i = 0; i<16;i++){
+                letterSlotsCondition[i] = true;
+            }
         }
 
 
