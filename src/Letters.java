@@ -16,7 +16,7 @@ class Letters {
             String[] letters = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"};
             for (int i = 0; i<26; i++){
                 letterPictures.put(letters[i], ImageIO.read(new File("Pictures/" + letters[i] + ".png")));
-                smallerLetterPictures.put(letters[i], ImageIO.read(new File("Pictures/smallerLetters/" + letters[i] + ".png")));
+                smallerLetterPictures.put(letters[i], ImageIO.read(new File("Pictures/smallerLetters/s" + letters[i] + ".png")));
             }
         }
         catch(IOException e){
