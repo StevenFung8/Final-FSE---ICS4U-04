@@ -55,6 +55,8 @@ class GamePanel extends JPanel implements KeyListener {
     private int level = 1;
     private Level levelPog;
     private Letters letters;
+    private Player player;
+    private Enemies enemy;
     private int mx,my;
     private Rectangle[] letterSlots = new Rectangle[16];
     private boolean[] letterSlotsCondition = new boolean[16];
@@ -67,6 +69,8 @@ class GamePanel extends JPanel implements KeyListener {
         setSize(800,600);
         levelPog = new Level(level);
         letters = new Letters();
+        player = new Player("StyleDaddy",100);
+        enemy = new Enemies(100);
         int rectCounter = 0;
         for (int x = 400; x<880;x+=120){
             for (int y = 240 ; y<720; y+=120){
@@ -82,6 +86,9 @@ class GamePanel extends JPanel implements KeyListener {
         alphabet = letters.randomXletters(16);
 
 
+    }
+    public static int randint(int low, int high){
+        return (int)(Math.random()*(high-low+1)+low);
     }
     public int letterSlotBoolean(boolean a){
         int counter = 0;
@@ -116,6 +123,11 @@ class GamePanel extends JPanel implements KeyListener {
         selectedWord="";
         mx=0;
         my=0;
+    }
+    public void battle(String word){
+        int damage = player.damage(word);
+        enemy.setHealth(enemy.getHealth()-damage);
+        player.setHealth(player.getHealth()-randint(0,5));
     }
 
 
@@ -162,7 +174,7 @@ class GamePanel extends JPanel implements KeyListener {
             for (int i = 0; i < 16; i++) {
                 letterSlotsCondition[i] = true;
                 selectedWord = "";
-                g.setColor(Color.WHITE);
+                //g.setColor(Color.WHITE);
                 //g.fillRect(100, 100, 1200, 120);//need to learn how to undraw the letters
             }
         }
@@ -176,6 +188,7 @@ class GamePanel extends JPanel implements KeyListener {
                 g.setColor(Color.GREEN);
                 g.fillRect(200, 400, 50, 50);
                 chosenWords.add(selectedWord);
+                battle(selectedWord);
                 slotReplace();
             }
             if (!letters.checkWord(selectedWord)) {
@@ -192,6 +205,13 @@ class GamePanel extends JPanel implements KeyListener {
                 g.drawString(output,950,300+20*i);
             }
         }
+        g.setFont(new Font("Times New Roman", Font.BOLD,20));
+        g.drawString(Integer.toString(player.getHealth()),50,50);
+        g.drawString(Integer.toString(enemy.getHealth()),1000,50);
+        g.setColor(Color.cyan);
+        g.fillRect(50,135,100,100);
+        g.setColor(Color.GRAY);
+        g.fillRect(1000,135,100,100);
     }
 
     @Override
