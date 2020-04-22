@@ -17,6 +17,7 @@ public class BookwormAdventures extends JFrame {
     Timer myTimer;
     private Image bookwormIcon;
     GamePanel game;
+    private static Image back;
 
     public static void main(String[] arguments) throws IOException{
         BookwormAdventures frame = new BookwormAdventures();
@@ -37,6 +38,14 @@ public class BookwormAdventures extends JFrame {
 
         setResizable(false);
         setVisible(true);
+        try {
+            //Loading pictures
+            back = ImageIO.read(new File(""));
+
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     class TickListener implements ActionListener {
@@ -126,6 +135,7 @@ class GamePanel extends JPanel implements KeyListener {
 
 
     public void paintComponent(Graphics g) {
+
         g.setColor(Color.white);
         g.fillRect(0,0,1280,820);
         if (level == 1) {
