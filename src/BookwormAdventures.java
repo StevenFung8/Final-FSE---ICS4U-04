@@ -17,6 +17,7 @@ public class BookwormAdventures extends JFrame {
     Timer myTimer;
     private Image bookwormIcon;
     GamePanel game;
+    private static Image back;
 
     public static void main(String[] arguments) throws IOException{
         BookwormAdventures frame = new BookwormAdventures();
@@ -37,6 +38,14 @@ public class BookwormAdventures extends JFrame {
 
         setResizable(false);
         setVisible(true);
+        try {
+            //Loading pictures
+            back = ImageIO.read(new File(""));
+
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     class TickListener implements ActionListener {
@@ -124,11 +133,13 @@ class GamePanel extends JPanel implements KeyListener {
         mx=0;
         my=0;
     }
+
     public void battle(String word){
         int damage = player.damage(word);
         enemy.setHealth(enemy.getHealth()-damage);
         player.setHealth(player.getHealth()-randint(0,5));
     }
+
 
 
     public void addNotify() {
@@ -174,6 +185,7 @@ class GamePanel extends JPanel implements KeyListener {
             for (int i = 0; i < 16; i++) {
                 letterSlotsCondition[i] = true;
                 selectedWord = "";
+                g.setColor(Color.WHITE);
                 //g.setColor(Color.WHITE);
                 //g.fillRect(100, 100, 1200, 120);//need to learn how to undraw the letters
             }
@@ -205,6 +217,7 @@ class GamePanel extends JPanel implements KeyListener {
                 g.drawString(output,950,300+20*i);
             }
         }
+
         g.setFont(new Font("Times New Roman", Font.BOLD,20));
         g.drawString(Integer.toString(player.getHealth()),50,50);
         g.drawString(Integer.toString(enemy.getHealth()),1000,50);
@@ -212,6 +225,7 @@ class GamePanel extends JPanel implements KeyListener {
         g.fillRect(50,135,100,100);
         g.setColor(Color.GRAY);
         g.fillRect(1000,135,100,100);
+
     }
 
     @Override
