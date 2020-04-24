@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.*;
 class Letters {
     private static Hashtable<String, Image> letterPictures = new Hashtable<>();
+    private static Hashtable<String, Image> smallerLetterPictures = new Hashtable<>();
     private static Hashtable<String,String> words = new Hashtable();
     private static ArrayList<String> scrambleCombo = new ArrayList<String>();
     public Letters() throws IOException{
@@ -15,6 +16,7 @@ class Letters {
             String[] letters = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"};
             for (int i = 0; i<26; i++){
                 letterPictures.put(letters[i], ImageIO.read(new File("Pictures/" + letters[i] + ".png")));
+                smallerLetterPictures.put(letters[i], ImageIO.read(new File("Pictures/smallerLetters/s" + letters[i] + ".png")));
             }
         }
         catch(IOException e){
@@ -27,7 +29,7 @@ class Letters {
     public Image getLetterImage(String letter){
         return letterPictures.get(letter);
     }
-    public ArrayList<String> random16letters(){
+    public ArrayList<String> randomXletters(int num){
         ArrayList<String> chosenLetters = new ArrayList<String>();
         String[] letters = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"};
         boolean wordsPresent = false;
@@ -35,15 +37,15 @@ class Letters {
         while(!wordsPresent) {
             String [] keys = words.keySet().toArray(new String[words.size()]);
             String key = keys[randint(0,keys.length)];
-            if(scramble.length() + key.length() < 16){
+            if(scramble.length() + key.length() < num){
                 scramble = scramble + key;
             }
-            if (scramble.length() >11 && scramble.length() <16){
-                for (int i = 0; i< 16-scramble.length(); i++){
+            if (scramble.length() >num-4 && scramble.length() <num){
+                for (int i = 0; i< num-scramble.length(); i++){
                     scramble = scramble + letters[randint(0,25)];
                 }
             }
-            if(scramble.length() == 16){
+            if(scramble.length() == num){
                 wordsPresent = true;
             }
         }
@@ -53,8 +55,14 @@ class Letters {
         Collections.shuffle(chosenLetters);
         return chosenLetters;
     }
-    public static Image getImage(String a){
-        return letterPictures.get(a);
+    public static Image getImage(String size,String a){
+        if (size.equals("SMALL")) {
+            return smallerLetterPictures.get(a);
+        }
+        if (size.equals("NORMAL")){
+            return letterPictures.get(a);
+        }
+        return null;
     }
 
     public static int randint(int low, int high){
@@ -80,6 +88,14 @@ class Letters {
         while (inFile.hasNextLine()){
             String currentWord = inFile.nextLine().toLowerCase();
             words.put(currentWord, currentWord);
+        }
+    }
+    public boolean checkWord(String input){
+        if (words.contains(input)){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 }
