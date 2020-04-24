@@ -1,6 +1,11 @@
+import java.awt.*;
+
 class Enemies {
+    private String name;
     private int health,damage;
-    public Enemies(int h){
+    private Image enemyPicture;
+    public Enemies(String s,int h){
+        name = s;
         health = h;
     }
     public int getDamage(){
@@ -11,5 +16,8 @@ class Enemies {
     }
     public void setHealth(int value){
         health = value;
+    }
+    public String getName(){
+        return name;
     }
 }
