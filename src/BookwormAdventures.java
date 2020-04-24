@@ -244,12 +244,7 @@ class GamePanel extends JPanel implements KeyListener {
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
         public void mouseClicked(MouseEvent e){
-            if (animationPlaying) {
-                animationPlaying = false;
-            }
-            else{
-                animationPlaying=true;
-            }
+            animationPlaying = !animationPlaying;
 
         }
 
