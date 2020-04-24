@@ -17,7 +17,6 @@ public class BookwormAdventures extends JFrame {
     Timer myTimer;
     private Image bookwormIcon;
     GamePanel game;
-    private static Image back;
 
     public static void main(String[] arguments) throws IOException{
         BookwormAdventures frame = new BookwormAdventures();
@@ -30,7 +29,7 @@ public class BookwormAdventures extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1280,820);
 
-        myTimer = new Timer(10, new TickListener());	 // trigger every 100 ms
+        myTimer = new Timer(100, new TickListener());	 // trigger every 100 ms
         myTimer.start();
 
         game = new GamePanel();
@@ -38,20 +37,16 @@ public class BookwormAdventures extends JFrame {
 
         setResizable(false);
         setVisible(true);
-        try {
-            //Loading pictures
-            back = ImageIO.read(new File(""));
 
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
     }
 
     class TickListener implements ActionListener {
         public void actionPerformed(ActionEvent evt){
             if(game!= null && game.ready){
+                game.update();
                 game.repaint();
+
+
             }
         }
     }
@@ -71,6 +66,11 @@ class GamePanel extends JPanel implements KeyListener {
     private ArrayList<String> chosenWords = new ArrayList<String>();
     private Rectangle resetButton,submitButton;
     private String selectedWord = "";
+    private static Image FireBack, IceBack, SkyBack, WaterBack;
+    private Animation FireDragonIdle;
+    private SpriteList FireDragonList;
+    private Boolean animationPlaying;
+
     public GamePanel() throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
@@ -89,8 +89,26 @@ class GamePanel extends JPanel implements KeyListener {
             letterSlotsCondition[i] = true;
         }
         alphabet = letters.randomXletters(16);
+        try {
+            //Loading Backgrounds
+            FireBack = ImageIO.read(new File("Pictures//Backgrounds//FireWorld.jpg"));
+            IceBack = ImageIO.read(new File("Pictures//Backgrounds//IceWorld.png"));
+            SkyBack = ImageIO.read(new File("Pictures//Backgrounds//SkyWorld.png"));
+            WaterBack = ImageIO.read(new File("Pictures//Backgrounds//WaterWorld.png"));
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+        animationPlaying=false;
+        FireDragonList = new SpriteList("Pictures/Enemies/Fire World/Fire Dragon",4);
+        FireDragonIdle = new Animation(FireDragonList.getList(),5);
 
+    }
 
+    public void update(){
+        if(animationPlaying) {
+            FireDragonIdle.update();
+        }
     }
     public int letterSlotBoolean(boolean a){
         int counter = 0;
@@ -132,15 +150,18 @@ class GamePanel extends JPanel implements KeyListener {
         super.addNotify();
         ready = true;
     }
-
+    public Animation getAnimation(){
+        return FireDragonIdle;
+    }
 
     public void paintComponent(Graphics g) {
 
-        g.setColor(Color.white);
-        g.fillRect(0,0,1280,820);
-        if (level == 1) {
-            g.setColor(Color.white);
-        }
+//        g.setColor(Color.white);
+//        g.fillRect(0,0,1280,820);
+//        if (level == 1) {
+//            g.setColor(Color.white);
+//        }
+        g.drawImage(FireBack,0,0,this);
         g.setColor(Color.BLACK);
         g.fillRect(0, 240, 1280, 20);
         g.fillRect(400, 240, 10, 480);
@@ -150,8 +171,6 @@ class GamePanel extends JPanel implements KeyListener {
             if (letterSlotsCondition[i]) {
                 g.drawImage(Letters.getImage("NORMAL", alphabet.get(i)), letterSlots[i].x + 20, letterSlots[i].y + 25, this);
             }
-
-
         }
         for (int i = 0; i < 16; i++) {
             if (letterSlots[i].contains(mx,my)) {
@@ -161,8 +180,6 @@ class GamePanel extends JPanel implements KeyListener {
                 }
             }
         }
-
-
         g.setColor(Color.BLACK);
         g.drawRect(resetButton.x, resetButton.y, resetButton.width + 10, resetButton.height);
         g.drawString("RESET",resetButton.x+resetButton.width/2,resetButton.y+resetButton.height/2);
@@ -202,6 +219,10 @@ class GamePanel extends JPanel implements KeyListener {
                 g.drawString(output,950,300+20*i);
             }
         }
+        ////////////////////ENEMIES
+        g.drawImage(FireDragonIdle.getSprite(),FireDragonIdle.getSpritePosX(),FireDragonIdle.getSpritePosY(),null);
+        System.out.println("image drawn");
+//        g.drawImage(FireDragonIdle.getSprite2(), 200, 50,null);
     }
 
     @Override
@@ -222,10 +243,23 @@ class GamePanel extends JPanel implements KeyListener {
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
-        public void mouseClicked(MouseEvent e){}
+        public void mouseClicked(MouseEvent e){
+            if (animationPlaying) {
+                animationPlaying = false;
+            }
+            else{
+                animationPlaying=true;
+            }
+
+        }
+
         public void mousePressed(MouseEvent e){
             mx = e.getX();
             my = e.getY();
+
+            System.out.println("click");
+
+
 
         }
     }
