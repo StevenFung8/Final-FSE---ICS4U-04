@@ -30,7 +30,7 @@ public class BookwormAdventures extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1280,820);
 
-        myTimer = new Timer(10, new TickListener());	 // trigger every 100 ms
+        myTimer = new Timer(100, new TickListener());	 // trigger every 100 ms
         myTimer.start();
 
         game = new GamePanel();
@@ -38,19 +38,13 @@ public class BookwormAdventures extends JFrame {
 
         setResizable(false);
         setVisible(true);
-        try {
-            //Loading pictures
-            back = ImageIO.read(new File(""));
 
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
     }
 
     class TickListener implements ActionListener {
         public void actionPerformed(ActionEvent evt){
             if(game!= null && game.ready){
+                game.update();
                 game.repaint();
             }
         }
@@ -65,22 +59,31 @@ class GamePanel extends JPanel implements KeyListener {
     private Level levelPog;
     private Letters letters;
     private Player player;
-    private Enemies enemy;
-    private int mx,my;
+    private Enemies currentEnemy;
+    private ArrayList<Enemies> enemiesQueue = new ArrayList<>();
+    private int mx,my,enemyCounter;
     private Rectangle[] letterSlots = new Rectangle[16];
     private boolean[] letterSlotsCondition = new boolean[16];
-    private ArrayList<String> alphabet;
+    private ArrayList<String> alphabet = new ArrayList<>();
+    private ArrayList<String> battleLogs = new ArrayList<>();
     private ArrayList<String> chosenWords = new ArrayList<String>();
     private Rectangle resetButton,submitButton;
     private String selectedWord = "";
+    private static Image FireBack, IceBack, SkyBack, WaterBack;
+    private Animation FireDragonIdle;
+    private SpriteList FireDragonList;
+    private Boolean animationPlaying;
+
     public GamePanel() throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
         levelPog = new Level(level);
         letters = new Letters();
         player = new Player("StyleDaddy",100);
-        enemy = new Enemies(100);
+        enemiesQueue = levelPog.getLevelEnemies();
+        currentEnemy = enemiesQueue.get(enemyCounter);
         int rectCounter = 0;
+        enemyCounter = 0;
         for (int x = 400; x<880;x+=120){
             for (int y = 240 ; y<720; y+=120){
                 letterSlots[rectCounter] = new Rectangle(x,y,120,120);
@@ -93,11 +96,26 @@ class GamePanel extends JPanel implements KeyListener {
             letterSlotsCondition[i] = true;
         }
         alphabet = letters.randomXletters(16);
-
+        try {
+            //Loading Backgrounds
+            FireBack = ImageIO.read(new File("Pictures//Backgrounds//FireWorld.jpg"));
+            IceBack = ImageIO.read(new File("Pictures//Backgrounds//IceWorld.png"));
+            SkyBack = ImageIO.read(new File("Pictures//Backgrounds//SkyWorld.png"));
+            WaterBack = ImageIO.read(new File("Pictures//Backgrounds//WaterWorld.png"));
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+        animationPlaying=false;
+        FireDragonList = new SpriteList("Pictures/Enemies/Fire World/Fire Dragon",4);
+        FireDragonIdle = new Animation(FireDragonList.getList(),5);
 
     }
-    public static int randint(int low, int high){
-        return (int)(Math.random()*(high-low+1)+low);
+
+    public void update(){
+        if(animationPlaying) {
+            FireDragonIdle.update();
+        }
     }
     public int letterSlotBoolean(boolean a){
         int counter = 0;
@@ -133,20 +151,30 @@ class GamePanel extends JPanel implements KeyListener {
         mx=0;
         my=0;
     }
+    public int randint(int low, int high){
+        return (int)(Math.random()*(high-low+1)+low);
+    }
 
     public void battle(String word){
         int damage = player.damage(word);
-        enemy.setHealth(enemy.getHealth()-damage);
-        player.setHealth(player.getHealth()-randint(0,5));
+        int enemyDamage = randint(0,5);
+        currentEnemy.setHealth(currentEnemy.getHealth()-damage);
+        player.setHealth(player.getHealth()- enemyDamage);
+        if (currentEnemy.getHealth() <=0){
+            enemyCounter++;
+            currentEnemy = enemiesQueue.get(enemyCounter);
+        }
+        battleLogs.add("You have dealt " + damage + " damage to the enemy!");
+        battleLogs.add("The enemy has dealt " + enemyDamage + " damage to you!");
     }
-
-
 
     public void addNotify() {
         super.addNotify();
         ready = true;
     }
-
+    public Animation getAnimation(){
+        return FireDragonIdle;
+    }
 
     public void paintComponent(Graphics g) {
         g.setColor(Color.white);
@@ -192,7 +220,7 @@ class GamePanel extends JPanel implements KeyListener {
         }
         if (selectedWord.length() > 0) {
             for (int i = 0; i < selectedWord.length(); i++) {
-                g.drawImage(letters.getImage("SMALL", String.valueOf(selectedWord.charAt(i))), 200 + 55 * i, 100, this);
+                g.drawImage(Letters.getImage("SMALL", String.valueOf(selectedWord.charAt(i))), 200 + 55 * i, 100, this);
             }
         }
         if (submitButton.contains(mx, my)) {
@@ -217,16 +245,32 @@ class GamePanel extends JPanel implements KeyListener {
                 g.drawString(output,950,300+20*i);
             }
         }
+        g.setFont(new Font("Times New Roman",Font.BOLD,30));
+        g.fillRect(100,180,50,50);
+        g.drawString(Integer.toString(player.getHealth()),100,100);
 
-        g.setFont(new Font("Times New Roman", Font.BOLD,20));
-        g.drawString(Integer.toString(player.getHealth()),50,50);
-        g.drawString(Integer.toString(enemy.getHealth()),1000,50);
-        g.setColor(Color.cyan);
-        g.fillRect(50,135,100,100);
-        g.setColor(Color.GRAY);
-        g.fillRect(1000,135,100,100);
 
+
+        if(currentEnemy!=null) {
+            g.setColor(new Color(0, currentEnemy.getHealth(), 100));
+            g.fillRect(1000, 180, 50, 50);
+            g.drawString(currentEnemy.getName(),1000,100);
+            g.setColor(Color.red);
+            g.drawString(Integer.toString(currentEnemy.getHealth()),1150,100);
+        }
+        if(battleLogs.size() > 0) {
+            for (int i = 0; i < battleLogs.size(); i++) {
+                g.setFont(new Font("Times New Roman",Font.PLAIN,15));
+                g.setColor(Color.DARK_GRAY);
+                g.drawString(battleLogs.get(i), 20, 300 + i * 25);
+            }
+        }
+        g.drawImage(FireDragonIdle.getSprite(),FireDragonIdle.getSpritePosX(),FireDragonIdle.getSpritePosY(),null);
+        System.out.println("image drawn");
+//        g.drawImage(FireDragonIdle.getSprite2(), 200, 50,null);
     }
+
+
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -246,10 +290,18 @@ class GamePanel extends JPanel implements KeyListener {
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
-        public void mouseClicked(MouseEvent e){}
+        public void mouseClicked(MouseEvent e){
+            animationPlaying = !animationPlaying;
+
+        }
+
         public void mousePressed(MouseEvent e){
             mx = e.getX();
             my = e.getY();
+
+            System.out.println("click");
+
+
 
         }
     }

@@ -1,10 +1,16 @@
+import java.util.*;
+
 public class Level {
-    public static void main(String [] args){
-        //System.out.println("penis");
-    }
+    private ArrayList<Enemies> enemies;
     public Level(int levelNum){
+        enemies = new ArrayList<Enemies>();
         if (levelNum == 1){
-            //System.out.println("yay it works");
+            enemies.add(new Enemies("Yuno",5));
+            enemies.add(new Enemies("Poppy",10));
+            enemies.add(new Enemies("Steven",15));
         }
+    }
+    public ArrayList<Enemies> getLevelEnemies(){
+        return enemies;
     }
 }
