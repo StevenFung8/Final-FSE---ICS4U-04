@@ -25,6 +25,14 @@ public class startMenu extends JFrame {
         startBtn.setBounds((714/2)-startPic.getIconWidth()/2,(714/2)-startPic.getIconHeight()/2,startPic.getIconWidth(),startPic.getIconHeight());
         layeredPane.add(startBtn,2);
 
+        ImageIcon randomPic = new ImageIcon("Pictures/bookworm.jpg");
+        JButton creditsBtn = new JButton(randomPic);
+        creditsBtn.setBackground(Color.BLACK);
+        creditsBtn.setBorder(new LineBorder(Color.BLACK));
+        creditsBtn.addActionListener(new ClickStart());
+        creditsBtn.setBounds(50,50,randomPic.getIconWidth(),randomPic.getIconHeight());
+        layeredPane.add(creditsBtn,2);
+
         setContentPane(layeredPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -40,6 +48,7 @@ public class startMenu extends JFrame {
         public void actionPerformed(ActionEvent evt){
             try {
                 BookwormAdventures game = new BookwormAdventures();
+                Level gay = new Level(1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
