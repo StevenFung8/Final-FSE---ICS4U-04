@@ -19,7 +19,7 @@ public class SpriteList {
                 BufferedImage sprite = ImageIO.read(new File(FileName+ "/tile00" + j + ".png"));
 //                System.out.println("loaded " + j);
                 list.add(sprite);
-                System.out.println(list);
+                //System.out.println(list);
             }catch(IOException e){
                 e.printStackTrace();
             }
