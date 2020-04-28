@@ -18,7 +18,7 @@ public class levelSelect extends JFrame {
         oneIcon = new ImageIcon(smallOnePic);
         JButton oneBtn = new JButton(oneIcon);
         oneBtn.setBorder(new LineBorder(Color.BLACK));
-        oneBtn.addActionListener(new levelSelect.ClickStart());
+        oneBtn.addActionListener(new levelSelect.loadLevel1());
         oneBtn.setBounds(300,150,300,169);
         layeredPane.add(oneBtn,2);
 
@@ -28,7 +28,7 @@ public class levelSelect extends JFrame {
         twoIcon = new ImageIcon(smallTwoPic);
         JButton twoBtn = new JButton(twoIcon);
         twoBtn.setBorder(new LineBorder(Color.BLACK));
-        twoBtn.addActionListener(new levelSelect.ClickStart());
+        twoBtn.addActionListener(new levelSelect.loadLevel2());
         twoBtn.setBounds(650,150,300,169);
         layeredPane.add(twoBtn,2);
 
@@ -38,7 +38,7 @@ public class levelSelect extends JFrame {
         threeIcon = new ImageIcon(smallThreePic);
         JButton threeBtn = new JButton(threeIcon);
         threeBtn.setBorder(new LineBorder(Color.BLACK));
-        threeBtn.addActionListener(new levelSelect.ClickStart());
+        threeBtn.addActionListener(new levelSelect.loadLevel3());
         threeBtn.setBounds(300,450,300,169);
         layeredPane.add(threeBtn,2);
 
@@ -48,7 +48,7 @@ public class levelSelect extends JFrame {
         fourIcon = new ImageIcon(smallFourPic);
         JButton fourBtn = new JButton(fourIcon);
         fourBtn.setBorder(new LineBorder(Color.BLACK));
-        fourBtn.addActionListener(new levelSelect.ClickStart());
+        fourBtn.addActionListener(new levelSelect.loadLevel4());
         fourBtn.setBounds(650,450,300,169);
         layeredPane.add(fourBtn,2);
 
@@ -60,7 +60,40 @@ public class levelSelect extends JFrame {
     public static void main (String[]args){
         levelSelect levels = new levelSelect();
     }
-    class ClickStart implements ActionListener {
+    class loadLevel1 implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent evt){
+            try {
+                BookwormAdventures game = new BookwormAdventures(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setVisible(false);
+        }
+    }
+    class loadLevel2 implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent evt){
+            try {
+                BookwormAdventures game = new BookwormAdventures(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setVisible(false);
+        }
+    }
+    class loadLevel3 implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent evt){
+            try {
+                BookwormAdventures game = new BookwormAdventures(1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setVisible(false);
+        }
+    }
+    class loadLevel4 implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent evt){
             try {
