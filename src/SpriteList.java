@@ -17,14 +17,10 @@ public class SpriteList {
             String j =Integer.toString(i);
             try {
                 BufferedImage sprite = ImageIO.read(new File(FileName+ "/tile00" + j + ".png"));
-//                System.out.println("loaded " + j);
                 list.add(sprite);
-                System.out.println(list);
             }catch(IOException e){
                 e.printStackTrace();
             }
-
-
         }
     }
     public ArrayList<BufferedImage> getList(){

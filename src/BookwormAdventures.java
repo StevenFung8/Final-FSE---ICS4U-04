@@ -108,7 +108,7 @@ class GamePanel extends JPanel implements KeyListener {
         }
         animationPlaying=false;
         FireDragonList = new SpriteList("Pictures/Enemies/Fire World/Fire Dragon",4);
-        FireDragonIdle = new Animation(FireDragonList.getList(),5);
+        FireDragonIdle = new Animation(FireDragonList.getList());
 
     }
 
