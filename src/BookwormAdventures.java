@@ -116,7 +116,7 @@ class GamePanel extends JPanel implements KeyListener {
         battleLogs.add("Welcome to Bookworm Adventures");
         animationPlaying=false;
         FireDragonList = new SpriteList("Pictures/Enemies/Fire World/Fire Dragon",4);
-        FireDragonIdle = new Animation(FireDragonList.getList(),5);
+        FireDragonIdle = new Animation(FireDragonList.getList());
 
     }
     public void setLevel(int value){

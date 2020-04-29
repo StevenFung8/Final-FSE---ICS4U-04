@@ -3,7 +3,7 @@ import java.awt.*;
 class Enemies {
     private String name;
     private int health,damage;
-    private Image enemyPicture;
+    private Animation animation;
     public Enemies(String s,int h){
         name = s;
         health = h;

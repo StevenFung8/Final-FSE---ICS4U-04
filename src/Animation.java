@@ -9,12 +9,12 @@ public class Animation {
     private int currentFrame;               // animations current frame
     private int val;
     private int totalFrames;                // total amount of frames for your animation
-
+    private int val2;
     private boolean stopped;                // has animations stopped
 
     private List<BufferedImage> frames = new ArrayList<BufferedImage>();    // Arraylist of frames
 
-    public Animation(ArrayList<BufferedImage> frames, int frameDelay) {
+    public Animation(ArrayList<BufferedImage> frames) {
 
         this.stopped = true;
 
@@ -25,6 +25,8 @@ public class Animation {
 
         this.currentFrame = 0;
         this.val=-1;
+        this.val2=1;
+
         this.totalFrames = this.frames.size();
 
     }
@@ -76,5 +78,17 @@ public class Animation {
         currentFrame+=val;
 //        System.out.println("updated to frame " + currentFrame);
 
+    }
+    public void playOnce(){
+        if (currentFrame==frames.size()-1){
+            val2=0;
+        }
+
+        currentFrame+=val2;
+        System.out.println(currentFrame);
+
+    }
+    public int getVal2(){
+        return val2;
     }
 }
