@@ -19,7 +19,7 @@ public class BookwormAdventures extends JFrame {
     GamePanel game;
     private static Image back;
 
-    publice static void main(String[] arguments) throws IOException{
+    public static void main(String[] arguments) throws IOException{
         BookwormAdventures frame = new BookwormAdventures();
         //System.out.println(words.toString());
     }
@@ -108,7 +108,7 @@ class GamePanel extends JPanel implements KeyListener {
         }
         animationPlaying=false;
         FireDragonList = new SpriteList("Pictures/Enemies/Fire World/Fire Dragon",4);
-        FireDragonIdle = new Animation(FireDragonList.getList(),5);
+        FireDragonIdle = new Animation(FireDragonList.getList());
 
     }
 
