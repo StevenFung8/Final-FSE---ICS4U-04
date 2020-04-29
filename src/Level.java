@@ -9,6 +9,11 @@ public class Level {
             enemies.add(new Enemies("Poppy",10));
             enemies.add(new Enemies("Steven",15));
         }
+        if(levelNum == 2){
+            enemies.add(new Enemies("Eren",5));
+            enemies.add(new Enemies("Mikasa",10));
+            enemies.add(new Enemies("Levi",15));
+        }
     }
     public ArrayList<Enemies> getLevelEnemies(){
         return enemies;

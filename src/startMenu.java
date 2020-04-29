@@ -9,6 +9,7 @@ public class startMenu extends JFrame implements ActionListener{
     private JLayeredPane layeredPane=new JLayeredPane();
     private JLayeredPane creditsPane=new JLayeredPane();
 
+
     public startMenu() {
         super("Bookworm Adventures");
         setSize(1280,820);
@@ -16,7 +17,9 @@ public class startMenu extends JFrame implements ActionListener{
         ImageIcon backPic = new ImageIcon("Pictures/StartMenu/Background.png");
         JLabel back = new JLabel(backPic);
         back.setBounds(0, 0,backPic.getIconWidth(),backPic.getIconHeight());
+        JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.add(back,Integer.valueOf(1));
+
 
         ImageIcon startPic = new ImageIcon("Pictures/StartMenu/PlayButton.png");
         JButton startBtn = new JButton(startPic);
@@ -49,9 +52,6 @@ public class startMenu extends JFrame implements ActionListener{
         backBtn.setBounds(50,50,300,100);
         creditsPane.add(backBtn,Integer.valueOf(2));
 
-
-
-
         setContentPane(layeredPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -73,7 +73,7 @@ public class startMenu extends JFrame implements ActionListener{
             try {
                 switch (evt.getActionCommand()) {
                     case "Start":
-                        BookwormAdventures game = new BookwormAdventures();
+                        levelSelect levels = new levelSelect();
                         Level gay = new Level(1);
                         break;
                     case "Credits":

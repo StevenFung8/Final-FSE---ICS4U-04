@@ -20,4 +20,8 @@ class Enemies {
     public String getName(){
         return name;
     }
+    @Override
+    public String toString(){
+        return name + " has " + health + " health.";
+    }
 }
