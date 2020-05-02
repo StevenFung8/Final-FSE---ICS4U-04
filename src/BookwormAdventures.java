@@ -222,8 +222,7 @@ class GamePanel extends JPanel implements KeyListener {
             BackVal -= 10;
             if(BackVal<=-1280){
                 BackVal=0;
-                '
-            '
+                moveBack=false;
             }
         }
 
