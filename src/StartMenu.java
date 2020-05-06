@@ -83,7 +83,7 @@ public class StartMenu extends JFrame implements ActionListener{
         public void actionPerformed(ActionEvent evt){
             switch (evt.getActionCommand()) {
                 case "Start":
-                    LevelSelect levels = new LevelSelect(parent);
+                    //LevelSelect levels = new LevelSelect(parent);
                     Level gay = new Level(1);
                     setVisible(false);
                     break;

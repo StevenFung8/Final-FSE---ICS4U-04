@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-public class LevelSelect extends JFrame {
+class LevelSelect extends JFrame {
     private StartMenu parent;
     public LevelSelect(StartMenu parent) {
 
