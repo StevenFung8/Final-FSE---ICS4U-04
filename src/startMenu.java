@@ -70,28 +70,24 @@ public class startMenu extends JFrame implements ActionListener{
     class ClickStart implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent evt){
-            try {
-                switch (evt.getActionCommand()) {
-                    case "Start":
-                        levelSelect levels = new levelSelect();
-                        Level gay = new Level(1);
-                        break;
-                    case "Credits":
-                        setContentPane(creditsPane);
-                        setVisible(true);
-                        break;
-                    case "back":
-                        System.out.println("penis");
+            switch (evt.getActionCommand()) {
+                case "Start":
+                    levelSelect levels = new levelSelect();
+                    Level gay = new Level(1);
+                    break;
+                case "Credits":
+                    setContentPane(creditsPane);
+                    setVisible(true);
+                    break;
+                case "back":
+                    System.out.println("penis");
 
-                        setContentPane(layeredPane);
-                        setVisible(true);
-                        break;
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
+                    setContentPane(layeredPane);
+                    setVisible(true);
+                    break;
             }
-//            setVisible(false);
+
+            //            setVisible(false);
         }
     }
 }
