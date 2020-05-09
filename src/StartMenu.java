@@ -3,21 +3,19 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
-public class startMenu extends JFrame implements ActionListener{
+public class StartMenu extends JFrame implements ActionListener{
     private JLayeredPane layeredPane=new JLayeredPane();
     private JLayeredPane creditsPane=new JLayeredPane();
 
 
-    public startMenu() {
+    public StartMenu() {
         super("Bookworm Adventures");
         setSize(1280,820);
 
         ImageIcon backPic = new ImageIcon("Pictures/StartMenu/Background.png");
         JLabel back = new JLabel(backPic);
         back.setBounds(0, 0,backPic.getIconWidth(),backPic.getIconHeight());
-        JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.add(back,Integer.valueOf(1));
 
 
@@ -25,17 +23,25 @@ public class startMenu extends JFrame implements ActionListener{
         JButton startBtn = new JButton(startPic);
         startBtn.setBorder(new LineBorder(Color.BLACK));
         startBtn.setActionCommand("Start");
-        startBtn.addActionListener(new ClickStart());
-        startBtn.setBounds(625-300/2,350,300,100);
+        startBtn.addActionListener(new ClickStart(this));
+        startBtn.setBounds(625-300/2,175,300,100);
         layeredPane.add(startBtn,Integer.valueOf(2));
 
         ImageIcon creditsPic = new ImageIcon("Pictures/StartMenu/CreditsButton.png");
         JButton creditsBtn = new JButton(creditsPic);
         creditsBtn.setBorder(new LineBorder(Color.BLACK));
         creditsBtn.setActionCommand("Credits");
-        creditsBtn.addActionListener(new ClickStart());
-        creditsBtn.setBounds(625-300/2,500,300,100);
+        creditsBtn.addActionListener(new ClickStart(this));
+        creditsBtn.setBounds(625-300/2,325,300,100);
         layeredPane.add(creditsBtn,Integer.valueOf(2));
+
+        ImageIcon exitPic = new ImageIcon("Pictures/StartMenu/ExitButton.png");
+        JButton exitBtn = new JButton(exitPic);
+        exitBtn.setBorder(new LineBorder(Color.BLACK));
+        exitBtn.setActionCommand("Exit");
+        exitBtn.addActionListener(new ClickStart(this));
+        exitBtn.setBounds(625-300/2,475,300,100);
+        layeredPane.add(exitBtn,Integer.valueOf(2));
 
 
 
@@ -48,7 +54,7 @@ public class startMenu extends JFrame implements ActionListener{
         JButton backBtn = new JButton(backBtnPic);
         backBtn.setBorder(new LineBorder(Color.BLACK));
         backBtn.setActionCommand("back");
-        backBtn.addActionListener(new ClickStart());
+        backBtn.addActionListener(new ClickStart(this));
         backBtn.setBounds(50,50,300,100);
         creditsPane.add(backBtn,Integer.valueOf(2));
 
@@ -59,7 +65,7 @@ public class startMenu extends JFrame implements ActionListener{
     }
 
     public static void main(String[] arguments) {
-        startMenu frame = new startMenu();
+        StartMenu frame = new StartMenu();
     }
 
     @Override
@@ -68,26 +74,30 @@ public class startMenu extends JFrame implements ActionListener{
     }
 
     class ClickStart implements ActionListener {
+        private StartMenu parent;
+        public ClickStart(StartMenu parent){
+            this.parent=parent;
+        }
         @Override
+
         public void actionPerformed(ActionEvent evt){
             switch (evt.getActionCommand()) {
                 case "Start":
-                    levelSelect levels = new levelSelect();
+                    //LevelSelect levels = new LevelSelect(parent);
                     Level gay = new Level(1);
+                    setVisible(false);
                     break;
                 case "Credits":
                     setContentPane(creditsPane);
                     setVisible(true);
                     break;
                 case "back":
-                    System.out.println("penis");
-
                     setContentPane(layeredPane);
                     setVisible(true);
                     break;
+                case "Exit":
+                    System.exit(1);
             }
-
-            //            setVisible(false);
         }
     }
 }
