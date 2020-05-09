@@ -24,7 +24,7 @@ public class Level {
             System.out.println(e);
         }
         if (levelNum == 1){
-            enemies.add(new Enemies("DarrellTheDragon",5,"Pictures/Enemies/Fire World/Fire Dragon",4));
+            enemies.add(new Enemies("DarrellTheDragon",100,"Pictures/Enemies/Fire World/Fire Dragon",4));
             LevelBack=FireBack;
 //            enemies.add(new Enemies("Poppy",10));
 //            enemies.add(new Enemies("Steven",15));

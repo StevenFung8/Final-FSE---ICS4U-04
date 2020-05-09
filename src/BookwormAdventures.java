@@ -102,8 +102,8 @@ class GamePanel extends JPanel implements KeyListener {
         }
         resetButton = new Rectangle(400,720,245,62);
         submitButton = new Rectangle(645,720,244,62);
-        healthBar = new Rectangle(25,25,210,30);
-        healthBar2 = new Rectangle(1045,25,210,30);
+        healthBar = new Rectangle(30,30,200,20);
+        healthBar2 = new Rectangle(1050,30,200,20);
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
         }
@@ -265,8 +265,14 @@ class GamePanel extends JPanel implements KeyListener {
         g.drawImage(ResetBtnPic,resetButton.x,resetButton.y,this);
         g.drawImage(SubmitBtnPic,submitButton.x,submitButton.y,this);
 
-        g.fillRect(healthBar.x,healthBar.y,healthBar.width,healthBar.height);
-        g.fillRect(healthBar2.x,healthBar2.y,healthBar2.width,healthBar2.height);
+        g.fillRect(25,25,210,30);
+        g.fillRect(1045,25,210,30);
+        g.setColor(Color.green);
+        g.fillRect(healthBar.x,healthBar.y,player.getHealth()*2,healthBar.height);
+        g.fillRect(healthBar2.x,healthBar2.y,levelPog.getLevelEnemies().get(0).getHealth()*2,healthBar2.height);
+        g.setColor(Color.red);
+        g.fillRect(healthBar.x+healthBar.width,healthBar.y,200-healthBar.width,healthBar.height);
+        g.fillRect(healthBar2.x+healthBar2.width,healthBar2.y,200-healthBar2.width,healthBar2.height);
 
         if (resetButton.contains(mx, my)) {
             for (int i = 0; i < 16; i++) {
