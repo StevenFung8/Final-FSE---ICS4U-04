@@ -3,13 +3,10 @@ import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -30,7 +27,7 @@ public class BookwormAdventures extends JFrame {
         level = levelValue;
         myTimer = new Timer(100, new TickListener());	 // trigger every 100 ms
         myTimer.start();
-        game = new GamePanel(level);
+        game = new GamePanel(level,this);
         add(game);
 
         setResizable(false);
@@ -76,22 +73,23 @@ class GamePanel extends JPanel implements KeyListener {
     private ArrayList<String> alphabet;
     private ArrayList<String> battleLogs = new ArrayList<>();
     private ArrayList<String> chosenWords = new ArrayList<String>();
-    private Rectangle resetButton,submitButton,healthBar,healthBar2;
+    private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton;
     private String selectedWord = "";
     private static Image WoodBack, ResetBtnPic, SubmitBtnPic;
     private int BackVal;
-    private boolean moveBack;
-
+    private boolean moveBack,winCondition;
+    private BookwormAdventures frame;
     private Boolean animationPlaying;
 
-    public GamePanel(int value) throws IOException {
+    public GamePanel(int value,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
+        winCondition = false;
         levelPog = new Level(value);
         letters = new Letters();
+        level = value;
         player = new Player("StyleDaddy",100);
         enemiesQueue = levelPog.getLevelEnemies();
-        currentEnemy = enemiesQueue.get(enemyCounter);
         int rectCounter = 0;
         enemyCounter = 0;
         for (int x = 400; x<880;x+=120){
@@ -104,6 +102,8 @@ class GamePanel extends JPanel implements KeyListener {
         submitButton = new Rectangle(645,720,244,62);
         healthBar = new Rectangle(30,30,200,20);
         healthBar2 = new Rectangle(1050,30,200,20);
+        nextButton = new Rectangle(400,490,200,100);
+        backButton = new Rectangle(700,490,200,100);
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
         }
@@ -122,8 +122,9 @@ class GamePanel extends JPanel implements KeyListener {
         animationPlaying=true;
         BackVal=0;
         moveBack=false;
-
-
+        System.out.println(enemiesQueue);
+        currentEnemy = enemiesQueue.get(enemyCounter);
+        this.frame = frame;
     }
     public void setLevel(int value){
         level = value;
@@ -134,6 +135,7 @@ class GamePanel extends JPanel implements KeyListener {
             levelPog.getLevelEnemies().get(0).getAnimation().update();
 
         }
+
     }
     public int letterSlotBoolean(boolean a){
         int counter = 0;
@@ -196,7 +198,7 @@ class GamePanel extends JPanel implements KeyListener {
                 currentEnemy = enemiesQueue.get(enemyCounter);
             }
             else{
-                System.out.println("you have won");
+                winCondition = true;
                 editBattleLogs("You have won this battle!");
             }
         }
@@ -204,7 +206,7 @@ class GamePanel extends JPanel implements KeyListener {
             editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you!");
             if (enemyCounter > enemiesQueue.size()){
                 currentEnemy = null;
-                System.out.println("you have won");
+                winCondition = true;
                 editBattleLogs("YOU HAVE WON");
                 moveBack=true;
         }
@@ -214,9 +216,11 @@ class GamePanel extends JPanel implements KeyListener {
         super.addNotify();
         ready = true;
     }
+
     public Animation getAnimation(){
         return levelPog.getLevelEnemies().get(0).getAnimation();
     }
+
     public void moveBack(){
         if (moveBack) {
             BackVal -= 10;
@@ -226,6 +230,20 @@ class GamePanel extends JPanel implements KeyListener {
             }
         }
 
+    }
+    public void changeLevelMemory() throws IOException {
+        PrintWriter file = new PrintWriter(new FileWriter("Text Files/levelMemory.txt",false),false);
+        file.flush();
+        for(int i = 0;i<4;i++){
+            if (i == level-1){
+                System.out.println("print");
+                file.write("YES,");
+            }
+            else{
+                System.out.println("printing");
+                file.write("NO,");
+            }
+        }
     }
 
     public void paintComponent(Graphics g) {
@@ -304,7 +322,6 @@ class GamePanel extends JPanel implements KeyListener {
             }
             else{
                 editBattleLogs("That is not valid word");
-                System.out.println("gay");
                 mouseReset();
             }
         }
@@ -339,6 +356,36 @@ class GamePanel extends JPanel implements KeyListener {
                 levelPog.getLevelEnemies().get(0).getAnimation().getSpritePosY(),null);
         //System.out.println("image drawn");
         //g.drawImage(FireDragonIdle.getSprite2(), 200, 50,null);
+        if (winCondition){
+            g.setColor(Color.BLACK);
+            g.fillRect(340,210,600,400);
+            g.setColor(Color.GREEN);
+            g.drawRect(backButton.x,backButton.y,backButton.width,backButton.height);
+            g.drawRect(nextButton.x,nextButton.y,nextButton.width,nextButton.height);
+            g.setFont(new Font("Times New Roman",Font.BOLD,25));
+            g.setColor(Color.WHITE);
+            g.drawString("You have won this battle!",500,350);
+            g.drawString("BACK",backButton.x+30,backButton.y+30);
+            g.drawString("NEXT",nextButton.x+30,nextButton.y+30);
+            if(backButton.contains(mx,my)){
+                try {
+                    changeLevelMemory();
+                    LevelSelect backTo = new LevelSelect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                frame.setVisible(false);
+            }
+            if(nextButton.contains(mx,my)){
+                try {
+                    changeLevelMemory();
+                    BookwormAdventures nextLevel = new BookwormAdventures(level+1);
+                    frame.setVisible(false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
     public void setGameLevel(int value){
         level = value;
@@ -372,9 +419,6 @@ class GamePanel extends JPanel implements KeyListener {
         public void mousePressed(MouseEvent e){
             mx = e.getX();
             my = e.getY();
-
-
-
 
         }
     }

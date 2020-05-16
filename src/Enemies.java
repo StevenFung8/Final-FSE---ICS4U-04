@@ -24,6 +24,7 @@ class Enemies {
         return animation;
     }
 
+
     public void setHealth(int value){
         health = value;
     }
