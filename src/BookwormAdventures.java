@@ -80,6 +80,7 @@ class GamePanel extends JPanel implements KeyListener {
     private boolean moveBack,winCondition;
     private BookwormAdventures frame;
     private Boolean animationPlaying;
+    private int stage;
 
     public GamePanel(int value,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
@@ -104,6 +105,8 @@ class GamePanel extends JPanel implements KeyListener {
         healthBar2 = new Rectangle(1050,30,200,20);
         nextButton = new Rectangle(400,490,200,100);
         backButton = new Rectangle(700,490,200,100);
+
+        stage=0;
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
         }
@@ -132,7 +135,8 @@ class GamePanel extends JPanel implements KeyListener {
 
     public void update(){
         if(animationPlaying) {
-            levelPog.getLevelEnemies().get(0).getAnimation().update();
+            currentEnemy.getAnimation().update();
+            player.getAnimation().update();
 
         }
 
@@ -193,7 +197,9 @@ class GamePanel extends JPanel implements KeyListener {
         currentEnemy.setHealth(currentEnemy.getHealth()-damage);
         player.setHealth(player.getHealth()- enemyDamage);
         if (currentEnemy.getHealth() <=0){
+            moveBack=true;
             enemyCounter++;
+
             if (enemyCounter < enemiesQueue.size()){
                 currentEnemy = enemiesQueue.get(enemyCounter);
             }
@@ -201,6 +207,7 @@ class GamePanel extends JPanel implements KeyListener {
                 winCondition = true;
                 editBattleLogs("You have won this battle!");
             }
+
         }
         editBattleLogs("You have dealt " + damage + " damage to the enemy!");
             editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you!");
@@ -218,15 +225,17 @@ class GamePanel extends JPanel implements KeyListener {
     }
 
     public Animation getAnimation(){
-        return levelPog.getLevelEnemies().get(0).getAnimation();
+        return currentEnemy.getAnimation();
     }
 
     public void moveBack(){
         if (moveBack) {
-            BackVal -= 10;
+            BackVal -= 30;
             if(BackVal<=-1280){
                 BackVal=0;
                 moveBack=false;
+                stage++;
+
             }
         }
 
@@ -274,7 +283,7 @@ class GamePanel extends JPanel implements KeyListener {
             }
         }
         g.setFont(new Font("Times New Roman",Font.BOLD,30));
-        g.fillRect(100,180,50,50);
+//        g.fillRect(100,130,70,100);
         g.drawString(Integer.toString(player.getHealth()),100,100);
 
 
@@ -283,15 +292,21 @@ class GamePanel extends JPanel implements KeyListener {
         g.drawImage(ResetBtnPic,resetButton.x,resetButton.y,this);
         g.drawImage(SubmitBtnPic,submitButton.x,submitButton.y,this);
 
+        g.drawImage(player.getAnimation().getSprite(),100,130,null);
+
         g.fillRect(25,25,210,30);
         g.fillRect(1045,25,210,30);
         g.setColor(Color.green);
         g.fillRect(healthBar.x,healthBar.y,player.getHealth()*2,healthBar.height);
-        g.fillRect(healthBar2.x,healthBar2.y,levelPog.getLevelEnemies().get(0).getHealth()*2,healthBar2.height);
+        g.fillRect(healthBar2.x,healthBar2.y,currentEnemy.getHealth()*2,healthBar2.height);
         g.setColor(Color.red);
-        g.fillRect(healthBar.x+healthBar.width,healthBar.y,200-healthBar.width,healthBar.height);
-        g.fillRect(healthBar2.x+healthBar2.width,healthBar2.y,200-healthBar2.width,healthBar2.height);
-
+        g.fillRect(healthBar.x+player.getHealth()*2,healthBar.y,200-player.getHealth()*2,healthBar.height);
+        g.fillRect(healthBar2.x+currentEnemy.getHealth()*2,healthBar2.y,200-currentEnemy.getHealth()*2,healthBar2.height);
+        if(currentEnemy!=null) {
+            g.setColor(Color.BLACK);
+            g.drawString(currentEnemy.getName(),1050,20);
+            g.drawString(Integer.toString(currentEnemy.getHealth()),1140, 47);
+        }
         if (resetButton.contains(mx, my)) {
             for (int i = 0; i < 16; i++) {
                 letterSlotsCondition[i] = true;
@@ -336,11 +351,7 @@ class GamePanel extends JPanel implements KeyListener {
         }
 
 
-        if(currentEnemy!=null) {
-            g.drawString(currentEnemy.getName(),1000,100);
-            g.setColor(Color.red);
-            g.drawString(Integer.toString(currentEnemy.getHealth()),1150,100);
-        }
+
         if(battleLogs.size() > 0) {
             for (int i = 0; i < battleLogs.size(); i++) {
                 g.setFont(new Font("Times New Roman",Font.PLAIN,15));
@@ -352,10 +363,11 @@ class GamePanel extends JPanel implements KeyListener {
                 g.drawString(battleLogs.get(i), 20, 300 + i * 25);
             }
         }
-        g.drawImage(levelPog.getLevelEnemies().get(0).getAnimation().getSprite(),levelPog.getLevelEnemies().get(0).getAnimation().getSpritePosX(),
-                levelPog.getLevelEnemies().get(0).getAnimation().getSpritePosY(),null);
-        //System.out.println("image drawn");
-        //g.drawImage(FireDragonIdle.getSprite2(), 200, 50,null);
+        if (!moveBack) {
+            g.drawImage(currentEnemy.getAnimation().getSprite(), currentEnemy.getAnimation().getSpritePosX(),
+                    currentEnemy.getAnimation().getSpritePosY(), null);
+        }
+
         if (winCondition){
             g.setColor(Color.BLACK);
             g.fillRect(340,210,600,400);
@@ -412,7 +424,7 @@ class GamePanel extends JPanel implements KeyListener {
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
         public void mouseClicked(MouseEvent e){
-            moveBack=!moveBack;
+
 
         }
 

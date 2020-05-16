@@ -24,11 +24,13 @@ public class Level {
             System.out.println(e);
         }
         if (levelNum == 1){
-            enemies.add(new Enemies("DarrellTheDragon",10,"Pictures/Enemies/Fire World/Fire Dragon",4));
+            enemies.add(new Enemies("DarrellTheDragon",1,"Pictures/Enemies/Fire World/Fire Dragon",4));
+            enemies.add(new Enemies("Flint the Racoon", 1, "Pictures/Enemies/Fire World/Raccoon",3 ));
             LevelBack=FireBack;
         }
         else if(levelNum == 2){
             enemies.add(new Enemies("Beefy Mans",100,"Pictures/Enemies/Ice World/Ice Dragon",4));
+            LevelBack=IceBack;
         }
         else if(levelNum == 3){
             enemies.add(new Enemies("Chicken Mans",100,"Pictures/Enemies/Sky World/ Sky Dragon",4));
