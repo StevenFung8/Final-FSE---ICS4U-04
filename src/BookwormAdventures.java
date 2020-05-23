@@ -51,6 +51,7 @@ public class BookwormAdventures extends JFrame {
                 game.update();
                 game.repaint();
                 game.moveBack();
+                game.checkBattleLogs();
 
             }
         }
@@ -67,7 +68,7 @@ class GamePanel extends JPanel implements KeyListener {
     private Player player;
     private Enemies currentEnemy;
     private ArrayList<Enemies> enemiesQueue;
-    private int mx,my,enemyCounter;
+    private int mx,my,enemyCounter,nativeBattleLogsCount;
     private Rectangle[] letterSlots = new Rectangle[16];
     private boolean[] letterSlotsCondition = new boolean[16];
     private ArrayList<String> alphabet;
@@ -84,6 +85,7 @@ class GamePanel extends JPanel implements KeyListener {
     public GamePanel(int value,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
+        nativeBattleLogsCount = 0;
         winCondition = false;
         levelPog = new Level(value);
         letters = new Letters();
@@ -174,6 +176,12 @@ class GamePanel extends JPanel implements KeyListener {
         selectedWord="";
         mouseReset();
     }
+    public void checkBattleLogs(){
+        if(player.getNativeBattleLogs().size() > nativeBattleLogsCount){
+            battleLogs.add(player.getNativeBattleLogs().get(player.getNativeBattleLogs().size() - 1));
+            nativeBattleLogsCount ++;
+        }
+    }
     public void editBattleLogs(String s){
         if(battleLogs.size() <= 19){
             battleLogs.add(s);
@@ -231,19 +239,44 @@ class GamePanel extends JPanel implements KeyListener {
         }
 
     }
+    public String[] readLevelMemory() throws IOException{
+        String [] userStats = new String[4];
+        Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
+        while (inFile.hasNextLine()){
+            String stats = inFile.nextLine();
+            userStats = stats.split(",");
+        }
+        inFile.close();
+        return userStats;
+    }
     public void changeLevelMemory() throws IOException {
-        PrintWriter file = new PrintWriter(new FileWriter("Text Files/levelMemory.txt",false),false);
-        file.flush();
+        String [] stats = readLevelMemory();
+        PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/levelMemory.txt")));
         for(int i = 0;i<4;i++){
-            if (i == level-1){
-                System.out.println("print");
-                file.write("YES,");
+            if (i!=3) {
+                if (stats[i].equals("YES")) {
+                    file.print("YES,");
+                }
+                else if(i == level-1){
+                    file.print("YES,");
+                }
+                else{
+                    file.print("NO,");
+                }
             }
             else{
-                System.out.println("printing");
-                file.write("NO,");
+                if (stats[i].equals("YES")) {
+                    file.print("YES");
+                }
+                else if(i == level-1){
+                    file.print("YES");
+                }
+                else{
+                    file.print("NO");
+                }
             }
         }
+        file.close();
     }
 
     public void paintComponent(Graphics g) {
