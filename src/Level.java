@@ -24,19 +24,17 @@ public class Level {
             System.out.println(e);
         }
         if (levelNum == 1){
-            enemies.add(new Enemies("DarrellTheDragon",1,"Pictures/Enemies/Fire World/Fire Dragon",4));
-            enemies.add(new Enemies("Flint the Racoon", 1, "Pictures/Enemies/Fire World/Raccoon",3 ));
+            enemies.add(new Enemies("DarrellTheDragon",100,"Pictures/Enemies/Fire World/Fire Dragon",4));
             LevelBack=FireBack;
         }
         else if(levelNum == 2){
-            enemies.add(new Enemies("Beefy Mans",100,"Pictures/Enemies/Ice World/Ice Dragon",4));
-            LevelBack=IceBack;
+            enemies.add(new Enemies("Beefy Mans",4,"Pictures/Enemies/Ice World/Ice Dragon",4));
         }
         else if(levelNum == 3){
             enemies.add(new Enemies("Chicken Mans",100,"Pictures/Enemies/Sky World/ Sky Dragon",4));
         }
         else if(levelNum == 4){
-            enemies.add(new Enemies("Mom Mans",100,"Pictures/Enemies/Water World/Water Dragon",4));
+            enemies.add(new Enemies("Mom Mans",2,"Pictures/Enemies/Water World/Water Dragon",4));
         }
     }
     public ArrayList<Enemies> getLevelEnemies(){

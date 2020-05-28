@@ -3,10 +3,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -28,7 +25,7 @@ class LevelSelect extends JFrame {
         oneIcon = new ImageIcon(smallOnePic);
         JButton oneBtn = new JButton(oneIcon);
         if(userStats[0].equals("YES")){
-            oneBtn.setBorder(new LineBorder(Color.GREEN));
+            oneBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
         }
         else{
             oneBtn.setBorder(new LineBorder(Color.BLACK));
@@ -45,7 +42,7 @@ class LevelSelect extends JFrame {
         twoIcon = new ImageIcon(smallTwoPic);
         JButton twoBtn = new JButton(twoIcon);
         if(userStats[1].equals("YES")){
-            twoBtn.setBorder(new LineBorder(Color.GREEN));
+            twoBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
         }
         else{
             twoBtn.setBorder(new LineBorder(Color.BLACK));
@@ -62,7 +59,7 @@ class LevelSelect extends JFrame {
         threeIcon = new ImageIcon(smallThreePic);
         JButton threeBtn = new JButton(threeIcon);
         if(userStats[2].equals("YES")){
-            threeBtn.setBorder(new LineBorder(Color.GREEN));
+            threeBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
         }
         else{
             threeBtn.setBorder(new LineBorder(Color.BLACK));
@@ -79,7 +76,7 @@ class LevelSelect extends JFrame {
         fourIcon = new ImageIcon(smallFourPic);
         JButton fourBtn = new JButton(fourIcon);
         if(userStats[3].equals("YES")){
-            fourBtn.setBorder(new LineBorder(Color.GREEN));
+            fourBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
         }
         else{
             fourBtn.setBorder(new LineBorder(Color.BLACK));
@@ -98,7 +95,14 @@ class LevelSelect extends JFrame {
         layeredPane.add(backBtn,Integer.valueOf(2));
 
 
-        //ImageIcon resetBtnPic = new ImageIcon()
+        ImageIcon newBtnPic = new ImageIcon("Pictures/A.png");
+        JButton newBtn = new JButton(newBtnPic);
+        newBtn.setBorder(new LineBorder(Color.BLACK));
+        newBtn.setActionCommand("new");
+        newBtn.addActionListener(new LevelSelect.loadLevel());
+        newBtn.setBounds(1000,650,100,100);
+        layeredPane.add(newBtn,Integer.valueOf(3));
+
 
         setContentPane(layeredPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -129,7 +133,9 @@ class LevelSelect extends JFrame {
                         break;
                     case "back":
                         StartMenu startMenu = new StartMenu();
-
+                    case "new":
+                        clearLevelMemory();
+                        LevelSelect level = new LevelSelect();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -145,6 +151,14 @@ class LevelSelect extends JFrame {
             userStats = stats.split(",");
         }
         return userStats;
+    }
+    public void clearLevelMemory() throws IOException {
+        PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/levelMemory.txt")));
+        for (int i = 0; i<3;i++){
+            file.print("NO,");
+        }
+        file.print("NO");
+        file.close();
     }
 
 }
