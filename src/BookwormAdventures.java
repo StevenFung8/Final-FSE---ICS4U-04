@@ -80,8 +80,10 @@ class GamePanel extends JPanel implements KeyListener {
     private int BackVal;
     private boolean moveBack,winCondition;
     private BookwormAdventures frame;
-    private Boolean animationPlaying;
+    private Boolean animationPlaying, deathAnimationPlaying;
     private int stage;
+    private SpriteList deathSpriteList;
+    private Animation deathAnimation;
 
     public GamePanel(int value,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
@@ -107,8 +109,9 @@ class GamePanel extends JPanel implements KeyListener {
         healthBar2 = new Rectangle(1050,30,200,20);
         nextButton = new Rectangle(400,490,200,100);
         backButton = new Rectangle(700,490,200,100);
-
         stage=0;
+        deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",8);
+        deathAnimation = new Animation(deathSpriteList.getList());
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
         }
@@ -125,6 +128,7 @@ class GamePanel extends JPanel implements KeyListener {
         }
         battleLogs.add("Welcome to Bookworm Adventures");
         animationPlaying=true;
+        deathAnimationPlaying=false;
         BackVal=0;
         moveBack=false;
         System.out.println(enemiesQueue);
@@ -139,7 +143,9 @@ class GamePanel extends JPanel implements KeyListener {
         if(animationPlaying) {
             currentEnemy.getAnimation().update();
             player.getAnimation().update();
-
+        }
+        if(deathAnimationPlaying){
+            deathAnimation.playOnce();
         }
 
     }
@@ -205,6 +211,7 @@ class GamePanel extends JPanel implements KeyListener {
         currentEnemy.setHealth(currentEnemy.getHealth()-damage);
         player.setHealth(player.getHealth()- enemyDamage);
         if (currentEnemy.getHealth() <=0){
+            deathAnimationPlaying=true;
             moveBack=true;
             enemyCounter++;
 
@@ -223,7 +230,7 @@ class GamePanel extends JPanel implements KeyListener {
                 currentEnemy = null;
                 winCondition = true;
                 editBattleLogs("YOU HAVE WON");
-                moveBack=true;
+
         }
     }
 
@@ -335,6 +342,9 @@ class GamePanel extends JPanel implements KeyListener {
         g.setColor(Color.red);
         g.fillRect(healthBar.x+player.getHealth()*2,healthBar.y,200-player.getHealth()*2,healthBar.height);
         g.fillRect(healthBar2.x+currentEnemy.getHealth()*2,healthBar2.y,200-currentEnemy.getHealth()*2,healthBar2.height);
+        if(deathAnimationPlaying) {
+            g.drawImage(deathAnimation.getSprite(), deathAnimation.getSpritePosX(), deathAnimation.getSpritePosY(), null);
+        }
         if(currentEnemy!=null) {
             g.setColor(Color.BLACK);
             g.drawString(currentEnemy.getName(),1050,20);

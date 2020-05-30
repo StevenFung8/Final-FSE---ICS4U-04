@@ -9,11 +9,15 @@ class Player {
     private String username;
     private boolean sixup,healthup,xyz;
     private ArrayList<String> nativeBattleLogs = new ArrayList<>();
+    private SpriteList spriteList;
+    private Animation animation;
     public Player(String a,int h) throws FileNotFoundException {
         username = a;
         sixup = false;
         healthup = false;
         xyz = false;
+        spriteList=new SpriteList("Pictures/Player",3);
+        animation= new Animation(spriteList.getList());
         String[] levels = levelMemory();
         if (levels[0].equals("YES")){
             xyz = true;
@@ -71,5 +75,9 @@ class Player {
     }
     public ArrayList<String> getNativeBattleLogs(){
         return nativeBattleLogs;
+    }
+
+    public Animation getAnimation() {
+        return animation;
     }
 }
