@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 class Player {
-    private int health,score;
+    private int health,score,maxHealth;
     private String username;
     private boolean sixup,healthup,xyz;
     private ArrayList<String> nativeBattleLogs = new ArrayList<>();
@@ -30,21 +30,28 @@ class Player {
         }
         if(healthup){
             health = h + 20;
+            maxHealth = h+20;
         }
         else{
             health = h;
+            maxHealth = h;
         }
 
     }
     public int damage(String word){
         int damage = 0;
         damage += word.length();
+        boolean wordXYZCondition = false;
         if(xyz){
             for(int i = 0; i < word.length();i++){
                 if (word.charAt(i) == 'x' ||word.charAt(i) == 'y' ||word.charAt(i) == 'z'){
                     damage = damage * 2;
+                    wordXYZCondition = true;
                 }
+            }
+            if(wordXYZCondition){
                 nativeBattleLogs.add("This attack did twice the amount due to the XYZ treasure");
+                wordXYZCondition = false;
             }
         }
         if(sixup){
@@ -75,6 +82,9 @@ class Player {
     }
     public ArrayList<String> getNativeBattleLogs(){
         return nativeBattleLogs;
+    }
+    public int getMaxHealth(){
+        return maxHealth;
     }
 
     public Animation getAnimation() {

@@ -89,6 +89,7 @@ class Letters {
             String currentWord = inFile.nextLine().toLowerCase();
             words.put(currentWord, currentWord);
         }
+        inFile.close();
     }
     public boolean checkWord(String input){
         if (words.contains(input)){

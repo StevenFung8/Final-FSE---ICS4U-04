@@ -133,6 +133,7 @@ class LevelSelect extends JFrame {
                         break;
                     case "back":
                         StartMenu startMenu = new StartMenu();
+                        break;
                     case "new":
                         clearLevelMemory();
                         LevelSelect level = new LevelSelect();
@@ -150,7 +151,9 @@ class LevelSelect extends JFrame {
             String stats = inFile.nextLine();
             userStats = stats.split(",");
         }
+        inFile.close();
         return userStats;
+
     }
     public void clearLevelMemory() throws IOException {
         PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/levelMemory.txt")));
