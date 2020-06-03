@@ -24,9 +24,9 @@ public class Level {
             System.out.println(e);
         }
         if (levelNum == 1){
-            enemies.add(new Enemies("DarrellTheDragon",10,"Pictures/Enemies/Fire World/Fire Dragon",5));
-            enemies.add(new Enemies("RandyTheRacoon", 10, "Pictures/Enemies/Fire World/Raccoon", 4));
-            enemies.add(new Enemies("GertrudeTheGolem", 10, "Pictures/Enemies/Fire World/Golem",5));
+            enemies.add(new Enemies("DarrellTheDragon",0,"Pictures/Enemies/Fire World/Fire Dragon",5));
+            enemies.add(new Enemies("RandyTheRacoon", 0, "Pictures/Enemies/Fire World/Raccoon", 4));
+            enemies.add(new Enemies("GertrudeTheGolem", 0, "Pictures/Enemies/Fire World/Golem",5));
             LevelBack=FireBack;
         }
         else if(levelNum == 2){

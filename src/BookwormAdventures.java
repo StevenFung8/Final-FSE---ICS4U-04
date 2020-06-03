@@ -76,7 +76,7 @@ class GamePanel extends JPanel implements KeyListener {
     private ArrayList<String> chosenWords = new ArrayList<String>();
     private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton;
     private String selectedWord = "";
-    private static Image WoodBack, ResetBtnPic, SubmitBtnPic;
+    private static Image WoodBack, ResetBtnPic, SubmitBtnPic,WoodSign,BackBtn,NextBtn;
     private int BackVal;
     private boolean moveBack,winCondition;
     private BookwormAdventures frame;
@@ -110,7 +110,7 @@ class GamePanel extends JPanel implements KeyListener {
         nextButton = new Rectangle(400,490,200,100);
         backButton = new Rectangle(700,490,200,100);
         stage=0;
-        deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",8);
+        deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",9);
         deathAnimation = new Animation(deathSpriteList.getList());
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
@@ -122,6 +122,10 @@ class GamePanel extends JPanel implements KeyListener {
             WoodBack = ImageIO.read(new File("Pictures/Interface/WoodBack.png"));
             ResetBtnPic = ImageIO.read(new File("Pictures/Interface/ResetBtn.png"));
             SubmitBtnPic = ImageIO.read(new File("Pictures/Interface/SubmitBtn.png"));
+            WoodSign = ImageIO.read(new File("Pictures/Interface/sign.png"));
+            BackBtn = ImageIO.read(new File("Pictures/Interface/BackBtn.png"));
+            NextBtn = ImageIO.read(new File("Pictures/Interface/NextBtn.png"));
+
         }
         catch (IOException e) {
             System.out.println(e);
@@ -212,11 +216,12 @@ class GamePanel extends JPanel implements KeyListener {
         player.setHealth(player.getHealth()- enemyDamage);
         if (currentEnemy.getHealth() <=0){
             deathAnimationPlaying=true;
-            moveBack=true;
+
             enemyCounter++;
 
             if (enemyCounter < enemiesQueue.size()){
                 currentEnemy = enemiesQueue.get(enemyCounter);
+                moveBack=true;
             }
             else{
                 winCondition = true;
@@ -250,6 +255,8 @@ class GamePanel extends JPanel implements KeyListener {
                 BackVal=0;
                 moveBack=false;
                 stage++;
+                deathAnimationPlaying=false;
+                deathAnimation.reset();
 
             }
         }
@@ -406,22 +413,21 @@ class GamePanel extends JPanel implements KeyListener {
                 g.drawString(battleLogs.get(i), 20, 300 + i * 25);
             }
         }
-        if (!moveBack) {
+        if (!moveBack && !winCondition) {
             g.drawImage(currentEnemy.getAnimation().getSprite(), currentEnemy.getAnimation().getSpritePosX(),
                     currentEnemy.getAnimation().getSpritePosY(), null);
         }
 
         if (winCondition){
-            g.setColor(Color.BLACK);
-            g.fillRect(340,210,600,400);
-            g.setColor(Color.GREEN);
+
+            g.drawImage(WoodSign,640-(WoodSign.getWidth(null)/2),210,null);
+            g.setColor(Color.black);
             g.drawRect(backButton.x,backButton.y,backButton.width,backButton.height);
             g.drawRect(nextButton.x,nextButton.y,nextButton.width,nextButton.height);
-            g.setFont(new Font("Times New Roman",Font.BOLD,25));
-            g.setColor(Color.WHITE);
-            g.drawString("You have won this battle!",500,350);
-            g.drawString("BACK",backButton.x+30,backButton.y+30);
-            g.drawString("NEXT",nextButton.x+30,nextButton.y+30);
+            g.drawImage(BackBtn,backButton.x,backButton.y,null);
+            g.drawImage(NextBtn,nextButton.x,nextButton.y,null);
+
+
             if(backButton.contains(mx,my)){
                 try {
                     changeLevelMemory();

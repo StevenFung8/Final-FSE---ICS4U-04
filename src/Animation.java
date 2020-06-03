@@ -55,9 +55,9 @@ public class Animation {
         currentFrame = 0;
     }
     public void reset() {
-        this.stopped = true;
 
-        this.currentFrame = 0;
+        val2=1;
+        currentFrame = 0;
     }
 
 
@@ -83,11 +83,12 @@ public class Animation {
         if (currentFrame==frames.size()-1){
             val2=0;
         }
-
-        currentFrame+=val2;
-        System.out.println(currentFrame);
+        else {
+            currentFrame += val2;
+        }
 
     }
+
     public int getVal2(){
         return val2;
     }
