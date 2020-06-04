@@ -25,8 +25,8 @@ public class Level {
         }
         if (levelNum == 1){
             enemies.add(new Enemies("DarrellTheDragon",10,"Pictures/Enemies/Fire World/Fire Dragon",5));
-            enemies.add(new Enemies("RandyTheRacoon", 10, "Pictures/Enemies/Fire World/Raccoon", 4));
-            enemies.add(new Enemies("GertrudeTheGolem", 10, "Pictures/Enemies/Fire World/Golem",5));
+            //enemies.add(new Enemies("RandyTheRacoon", 10, "Pictures/Enemies/Fire World/Raccoon", 4));
+            //enemies.add(new Enemies("GertrudeTheGolem", 10, "Pictures/Enemies/Fire World/Golem",5));
             LevelBack=FireBack;
         }
         else if(levelNum == 2){

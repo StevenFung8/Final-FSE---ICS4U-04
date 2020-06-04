@@ -4,16 +4,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 class LevelSelect extends JFrame {
+    private boolean [] userStats = new boolean[4];
+    private boolean [] lockStats = new boolean[4];
     public LevelSelect() throws FileNotFoundException {
         super("Bookworm Adventures");
         setSize(1280, 820);
         JLayeredPane layeredPane = new JLayeredPane();
-        String [] userStats = levelMemory();
+        levelMemory();
         System.out.println(Arrays.toString(userStats));
+        System.out.println(Arrays.toString(lockStats));
         ImageIcon backPic = new ImageIcon("Pictures/Backgrounds/LevelSelectBack.png");
         JLabel back = new JLabel(backPic);
         back.setBounds(0,0,1280,820);
@@ -24,11 +28,16 @@ class LevelSelect extends JFrame {
         Image smallOnePic = onePic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         oneIcon = new ImageIcon(smallOnePic);
         JButton oneBtn = new JButton(oneIcon);
-        if(userStats[0].equals("YES")){
-            oneBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
+        if(!lockStats[0]){
+            oneBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
-        else{
-            oneBtn.setBorder(new LineBorder(Color.BLACK));
+        else {
+            if (userStats[0]) {
+                oneBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            }
+            else {
+                oneBtn.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+            }
         }
         oneBtn.addActionListener(new LevelSelect.loadLevel());
         oneBtn.setBounds(300, 160, 300, 169);
@@ -41,11 +50,16 @@ class LevelSelect extends JFrame {
         Image smallTwoPic = twoPic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         twoIcon = new ImageIcon(smallTwoPic);
         JButton twoBtn = new JButton(twoIcon);
-        if(userStats[1].equals("YES")){
-            twoBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
+        if(!lockStats[1]){
+            twoBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
-        else{
-            twoBtn.setBorder(new LineBorder(Color.BLACK));
+        else {
+            if (userStats[1]) {
+                twoBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            }
+            else {
+                twoBtn.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+            }
         }
         twoBtn.addActionListener(new LevelSelect.loadLevel());
         twoBtn.setBounds(650, 160, 300, 169);
@@ -53,16 +67,22 @@ class LevelSelect extends JFrame {
         twoBtn.setActionCommand("Button 2");
 
 
+
         ImageIcon threeIcon = new ImageIcon("Pictures/Backgrounds/SkyWorld.png");
         Image threePic = threeIcon.getImage();
         Image smallThreePic = threePic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         threeIcon = new ImageIcon(smallThreePic);
         JButton threeBtn = new JButton(threeIcon);
-        if(userStats[2].equals("YES")){
-            threeBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
+        if(!lockStats[2]){
+            threeBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
-        else{
-            threeBtn.setBorder(new LineBorder(Color.BLACK));
+        else {
+            if (userStats[2]) {
+                threeBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            }
+            else {
+                threeBtn.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+            }
         }
         threeBtn.addActionListener(new LevelSelect.loadLevel());
         threeBtn.setBounds(300, 450, 300, 169);
@@ -75,11 +95,16 @@ class LevelSelect extends JFrame {
         Image smallFourPic = fourPic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         fourIcon = new ImageIcon(smallFourPic);
         JButton fourBtn = new JButton(fourIcon);
-        if(userStats[3].equals("YES")){
-            fourBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN,4));
+        if(!lockStats[3]){
+            fourBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
-        else{
-            fourBtn.setBorder(new LineBorder(Color.BLACK));
+        else {
+            if (userStats[3]) {
+                fourBtn.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+            }
+            else {
+                fourBtn.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+            }
         }
         fourBtn.addActionListener(new LevelSelect.loadLevel());
         fourBtn.setBounds(650, 450, 300, 169);
@@ -120,39 +145,57 @@ class LevelSelect extends JFrame {
                 System.out.println(evt.getActionCommand());
                 switch (evt.getActionCommand()) {
                     case "Button 1":
-                        BookwormAdventures game = new BookwormAdventures(1);
+                        if(lockStats[0]) {
+                            BookwormAdventures game = new BookwormAdventures(1);
+                            setVisible(false);
+                        }
                         break;
                     case "Button 2":
-                        BookwormAdventures game2 = new BookwormAdventures(2);
+                        if(lockStats[1]) {
+                            BookwormAdventures game2 = new BookwormAdventures(2);
+                            setVisible(false);
+                        }
                         break;
                     case "Button 3":
-                        BookwormAdventures game3 = new BookwormAdventures(3);
+                        if(lockStats[2]) {
+                            BookwormAdventures game3 = new BookwormAdventures(3);
+                            setVisible(false);
+                        }
                         break;
                     case "Button 4":
-                        BookwormAdventures game4 = new BookwormAdventures(4);
+                        if(lockStats[3]) {
+                            BookwormAdventures game4 = new BookwormAdventures(4);
+                            setVisible(false);
+                        }
                         break;
                     case "back":
                         StartMenu startMenu = new StartMenu();
+                        setVisible(false);
                         break;
                     case "new":
                         clearLevelMemory();
                         LevelSelect level = new LevelSelect();
+                        setVisible(false);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            setVisible(false);
         }
     }
-    public String[] levelMemory() throws FileNotFoundException {
-        String [] userStats = new String[4];
+    public void levelMemory() throws FileNotFoundException {
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
-        while (inFile.hasNextLine()){
-            String stats = inFile.nextLine();
-            userStats = stats.split(",");
+
+        String stats = inFile.nextLine();
+        String [] userStats = stats.split(",");
+        for(int i = 0; i<userStats.length; i++){
+            this.userStats[i] = userStats[i].equals("YES");
+        }
+        String stats1 = inFile.nextLine();
+        String [] lockStats = stats1.split(",");
+        for (int i = 0; i < lockStats.length;i++){
+            this.lockStats[i] = lockStats[i].equals("UNLOCKED");
         }
         inFile.close();
-        return userStats;
 
     }
     public void clearLevelMemory() throws IOException {
@@ -161,6 +204,12 @@ class LevelSelect extends JFrame {
             file.print("NO,");
         }
         file.print("NO");
+        file.println("");
+        file.print("UNLOCKED,");
+        for (int i = 0; i<2;i++){
+            file.print("LOCKED,");
+        }
+        file.print("LOCKED");
         file.close();
     }
 

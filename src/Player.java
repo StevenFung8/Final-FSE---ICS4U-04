@@ -11,6 +11,7 @@ class Player {
     private ArrayList<String> nativeBattleLogs = new ArrayList<>();
     private SpriteList spriteList;
     private Animation animation;
+    private boolean [] userStats = new boolean[4];
     public Player(String a,int h) throws FileNotFoundException {
         username = a;
         sixup = false;
@@ -18,14 +19,14 @@ class Player {
         xyz = false;
         spriteList=new SpriteList("Pictures/Player",3);
         animation= new Animation(spriteList.getList());
-        String[] levels = levelMemory();
-        if (levels[0].equals("YES")){
+        levelMemory();
+        if (userStats[0]){
             xyz = true;
         }
-        if(levels[1].equals("YES")){
+        if(userStats[1]){
             sixup = true;
         }
-        if(levels[2].equals("YES")){
+        if(userStats[3]){
             healthup = true;
         }
         if(healthup){
@@ -68,14 +69,22 @@ class Player {
     public void setHealth(int value){
         health = value;
     }
-    public String[] levelMemory() throws FileNotFoundException {
-        String [] userStats = new String[4];
+    public void levelMemory() throws FileNotFoundException {
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
-        while (inFile.hasNextLine()){
-            String stats = inFile.nextLine();
-            userStats = stats.split(",");
+
+        String stats = inFile.nextLine();
+        String [] userStats = stats.split(",");
+        for(int i = 0; i<userStats.length; i++){
+            this.userStats[i] = userStats[i].equals("YES");
         }
-        return userStats;
+        /*
+        String stats1 = inFile.nextLine();
+        String [] lockStats = stats1.split(",");
+        for (int i = 0; i < lockStats.length;i++){
+            this.lockStats[i] = lockStats[i].equals("UNLOCKED");
+        }
+        inFile.close();
+        */
     }
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
@@ -86,7 +95,15 @@ class Player {
     public int getMaxHealth(){
         return maxHealth;
     }
-
+    public boolean getXYZ(){
+        return xyz;
+    }
+    public boolean getSixUp(){
+        return sixup;
+    }
+    public boolean getHealthUp(){
+        return healthup;
+    }
     public Animation getAnimation() {
         return animation;
     }
