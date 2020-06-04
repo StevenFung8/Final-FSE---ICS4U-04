@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 class Player {
-    private int health,score,maxHealth;
+    private int health,score,maxHealth,attackMultiplier;
     private String username;
     private boolean sixup,healthup,xyz;
     private ArrayList<String> nativeBattleLogs = new ArrayList<>();
@@ -20,6 +20,7 @@ class Player {
         spriteList=new SpriteList("Pictures/Player",3);
         animation= new Animation(spriteList.getList());
         levelMemory();
+        attackMultiplier=1;
         if (userStats[0]){
             xyz = true;
         }
@@ -42,6 +43,7 @@ class Player {
     public int damage(String word){
         int damage = 0;
         damage += word.length();
+        damage *= attackMultiplier;
         boolean wordXYZCondition = false;
         if(xyz){
             for(int i = 0; i < word.length();i++){

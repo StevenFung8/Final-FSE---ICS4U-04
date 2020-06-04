@@ -128,6 +128,16 @@ class LevelSelect extends JFrame {
         newBtn.setBounds(1000,650,100,100);
         layeredPane.add(newBtn,Integer.valueOf(3));
 
+        ImageIcon skillBtnPic = new ImageIcon("Pictures/SkillTree/treebtn.png");
+        JButton skillBtn = new JButton(skillBtnPic);
+        skillBtn.setBorder(new LineBorder(Color.DARK_GRAY));
+        skillBtn.setActionCommand("skill");
+        skillBtn.addActionListener(new LevelSelect.loadLevel());
+        skillBtn.setBounds(1000,50,100,100);
+        layeredPane.add(skillBtn,Integer.valueOf(3));
+
+
+
 
         setContentPane(layeredPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -176,6 +186,11 @@ class LevelSelect extends JFrame {
                         clearLevelMemory();
                         LevelSelect level = new LevelSelect();
                         setVisible(false);
+                    case "skill":
+                        SkillTree sTree = new SkillTree();
+                        break;
+
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
