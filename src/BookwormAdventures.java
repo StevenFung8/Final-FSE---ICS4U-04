@@ -53,6 +53,7 @@ public class BookwormAdventures extends JFrame {
                 game.moveBack();
                 game.checkBattleLogs();
                 game.checkVowels();
+                game.trackMousePosition();
 
             }
         }
@@ -69,13 +70,13 @@ class GamePanel extends JPanel implements KeyListener {
     private Player player;
     private Enemies currentEnemy;
     private ArrayList<Enemies> enemiesQueue;
-    private int mx,my,enemyCounter,nativeBattleLogsCount;
+    private int mx,my,enemyCounter,nativeBattleLogsCount,px,py;
     private Rectangle[] letterSlots = new Rectangle[16];
     private boolean[] letterSlotsCondition = new boolean[16];
     private ArrayList<String> alphabet;
     private ArrayList<String> battleLogs = new ArrayList<>();
     private ArrayList<String> chosenWords = new ArrayList<String>();
-    private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton,exitButton;
+    private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton,exitButton,powerUp1,powerUp2,powerUp3;
     private String selectedWord = "";
     private static Image WoodBack, ResetBtnPic, SubmitBtnPic,WoodSign,BackBtn,ExitBtnPic,NextBtn,pixelHeart,gains,xyzPic;
     private int BackVal;
@@ -85,16 +86,21 @@ class GamePanel extends JPanel implements KeyListener {
     private int stage;
     private SpriteList deathSpriteList;
     private Animation deathAnimation;
+    private Point p;
+    private boolean[] userStats = new boolean[4];
+    private boolean [] lockStats = new boolean [4];
 
     public GamePanel(int value,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
+        readLevelMemory();
         nativeBattleLogsCount = 0;
         winCondition = false;
         exitCondition = false;
         levelPog = new Level(value);
         letters = new Letters();
         level = value;
+        p = getMousePosition();
         player = new Player("StyleDaddy",100);
         enemiesQueue = levelPog.getLevelEnemies();
         int rectCounter = 0;
@@ -112,6 +118,9 @@ class GamePanel extends JPanel implements KeyListener {
         nextButton = new Rectangle(400,490,200,100);
         backButton = new Rectangle(700,490,200,100);
         exitButton = new Rectangle(625,0,50,50);
+        powerUp1 = new Rectangle(30,60,50,50);
+        powerUp2 = new Rectangle(90,60,50,50);
+        powerUp3 = new Rectangle(150,60,50,50);
         stage=0;
         deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",9);
         deathAnimation = new Animation(deathSpriteList.getList());
@@ -270,22 +279,27 @@ class GamePanel extends JPanel implements KeyListener {
         }
 
     }
-    public String[] readLevelMemory() throws IOException{
-        String [] userStats = new String[4];
+    public void readLevelMemory() throws FileNotFoundException {
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
-        while (inFile.hasNextLine()){
-            String stats = inFile.nextLine();
-            userStats = stats.split(",");
+
+        String stats = inFile.nextLine();
+        String [] userStats = stats.split(",");
+        for(int i = 0; i<userStats.length; i++){
+            this.userStats[i] = userStats[i].equals("YES");
+        }
+        String stats1 = inFile.nextLine();
+        String [] lockStats = stats1.split(",");
+        for (int i = 0; i < lockStats.length;i++){
+            this.lockStats[i] = lockStats[i].equals("UNLOCKED");
         }
         inFile.close();
-        return userStats;
+
     }
     public void changeLevelMemory() throws IOException {
-        String [] stats = readLevelMemory();
         PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/levelMemory.txt")));
         for(int i = 0;i<4;i++){
             if (i!=3) {
-                if (stats[i].equals("YES")) {
+                if (userStats[i]) {
                     file.print("YES,");
                 }
                 else if(i == level-1){
@@ -296,7 +310,7 @@ class GamePanel extends JPanel implements KeyListener {
                 }
             }
             else{
-                if (stats[i].equals("YES")) {
+                if (userStats[i]) {
                     file.print("YES");
                 }
                 else if(i == level-1){
@@ -304,6 +318,31 @@ class GamePanel extends JPanel implements KeyListener {
                 }
                 else{
                     file.print("NO");
+                }
+            }
+        }
+        file.println("");
+        for(int a = 0;a <4 ;a++){
+            if(a!=3){
+                if (lockStats[a]){
+                    file.print("UNLOCKED,");
+                }
+                else if (a == level){
+                    file.print("UNLOCKED,");
+                }
+                else{
+                    file.print("LOCKED,");
+                }
+            }
+            else{
+                if (lockStats[a]){
+                    file.print("UNLOCKED");
+                }
+                else if (a == level){
+                    file.print("UNLOCKED");
+                }
+                else{
+                    file.print("LOCKED");
                 }
             }
         }
@@ -321,8 +360,17 @@ class GamePanel extends JPanel implements KeyListener {
             editBattleLogs("There we no vowels, so your board has been reshuffled!");
         }
     }
+    public void trackMousePosition(){
+        Point p = MouseInfo.getPointerInfo().getLocation();
+        px = p.x;
+        py = p.y;
+    }
 
     public void paintComponent(Graphics g) {
+        p = getMousePosition();
+        if(p == null){
+            p = new Point(0,0);
+        }
         g.drawImage(levelPog.getBack(),BackVal,0,this);
         g.drawImage(levelPog.getBack(),1280+BackVal,0,this);
         g.setColor(Color.BLACK);
@@ -438,7 +486,15 @@ class GamePanel extends JPanel implements KeyListener {
             g.drawImage(currentEnemy.getAnimation().getSprite(), currentEnemy.getAnimation().getSpritePosX(),
                     currentEnemy.getAnimation().getSpritePosY(), null);
         }
-
+        if (player.getXYZ()){
+            g.drawImage(xyzPic,powerUp1.x,powerUp1.y,this);
+        }
+        if(player.getSixUp()){
+            g.drawImage(gains,powerUp2.x,powerUp2.y,this);
+        }
+        if(player.getHealthUp()){
+            g.drawImage(pixelHeart,powerUp3.x,powerUp2.y,this);
+        }
         if (winCondition){
 
             g.drawImage(WoodSign,640-(WoodSign.getWidth(null)/2),210,null);
@@ -506,7 +562,6 @@ class GamePanel extends JPanel implements KeyListener {
                 exitCondition = false;
             }
             if(nextButton.contains(mx,my)){
-                System.out.println("it worked");
                 try {
                     LevelSelect backTo = new LevelSelect();
 
@@ -516,9 +571,33 @@ class GamePanel extends JPanel implements KeyListener {
                 frame.setVisible(false);
             }
         }
-    }
-    public void setGameLevel(int value){
-        level = value;
+        if (player.getXYZ()) {
+            if (powerUp1.contains(p.x, p.y)) {
+                g.setColor(Color.white);
+                g.fillRect(powerUp1.x, powerUp1.y + powerUp1.height + 5, 725, 25);
+                g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+                g.setColor(Color.black);
+                g.drawString("This powerup makes any word that contains an x,y, or z deal twice the amount of damage", powerUp1.x + 3, powerUp1.y + powerUp1.height + 21);
+            }
+        }
+        if(player.getSixUp()) {
+            if (powerUp2.contains(p.x, p.y)) {
+                g.setColor(Color.white);
+                g.fillRect(powerUp2.x, powerUp2.y + powerUp2.height + 5, 760, 25);
+                g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+                g.setColor(Color.black);
+                g.drawString("This powerup makes any word that contains 6 or more letters deal 50% the amount of damage", powerUp2.x + 3, powerUp2.y + powerUp2.height + 21);
+            }
+        }
+        if(player.getHealthUp()) {
+            if (powerUp3.contains(p.x, p.y)) {
+                g.setColor(Color.white);
+                g.fillRect(powerUp3.x, powerUp3.y + powerUp3.height + 5, 350, 25);
+                g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+                g.setColor(Color.black);
+                g.drawString("This powerup gives you an extra 20 health!", powerUp3.x + 3, powerUp3.y + powerUp3.height + 21);
+            }
+        }
     }
 
 
