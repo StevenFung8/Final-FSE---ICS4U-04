@@ -20,6 +20,7 @@ class Enemies {
         return health;
     }
 
+
     public Animation getAnimation() {
         return animation;
     }

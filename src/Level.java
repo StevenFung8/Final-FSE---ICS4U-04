@@ -30,7 +30,7 @@ public class Level {
             LevelBack=FireBack;
         }
         else if(levelNum == 2){
-            enemies.add(new Enemies("Beefy Mans",20,"Pictures/Enemies/Ice World/Ice Dragon",4));
+            enemies.add(new Enemies("Beefy Mans",10,"Pictures/Enemies/Ice World/Ice Dragon",4));
             enemies.add(new Enemies("PauleneThePenguin",20,"Pictures/Enemies/Ice World/Penguin",8));
             enemies.add(new Enemies("Kevin", 20, "Pictures/Enemies/Ice World/Yeti",4));
             LevelBack=IceBack;
