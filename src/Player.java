@@ -21,6 +21,10 @@ class Player {
         animation= new Animation(spriteList.getList());
         levelMemory();
         attackMultiplier=1;
+//        if (getLock().SkillTree){
+//            attackMultiplier=2;
+//        }
+
         if (userStats[0]){
             xyz = true;
         }
@@ -40,10 +44,13 @@ class Player {
         }
 
     }
+
     public int damage(String word){
         int damage = 0;
         damage += word.length();
+
         damage *= attackMultiplier;
+
         boolean wordXYZCondition = false;
         if(xyz){
             for(int i = 0; i < word.length();i++){
@@ -108,5 +115,8 @@ class Player {
     }
     public Animation getAnimation() {
         return animation;
+    }
+    public int getAttackMultiplier(){
+        return attackMultiplier;
     }
 }

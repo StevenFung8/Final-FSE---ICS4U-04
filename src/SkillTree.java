@@ -8,71 +8,48 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 class SkillTree extends JFrame {
+
     private JLayeredPane skillPane;
-    private ImageIcon SPic1, SPic2, SPic3, SPic4, SPic5, SPic6, SPic7, skillTree, backBtnPic;
+    private ImageIcon skillTree, backBtnPic;
     private JButton SBtn1, SBtn2, SBtn3, SBtn4, SBtn5, SBtn6, SBtn7;
-    private Skill Skill1;
+    private Skill Skill1, Skill2, Skill3;
+    private Boolean lock1, lock2, lock3, lock4, lock5, lock6, lock7;
 
     public SkillTree() throws FileNotFoundException {
         super("Bookworm Adventures");
         setSize(1280, 820);
         skillPane = new JLayeredPane();
+        lock1 =false;
+        lock2 =false;
+        lock3 =false;
+        lock4 =false;
+        lock5 =false;
+        lock6 =false;
+        lock7 =false;
+
         skillTree = new ImageIcon("Pictures/Backgrounds/SkillTree.png");
         backBtnPic = new ImageIcon("Pictures/StartMenu/BackButton.png");
-        Skill1 = new Skill("1");
-        SPic1 = new ImageIcon("Pictures/SkillTree/Skill1.png");
-        SPic2 = new ImageIcon("Pictures/SkillTree/Skill2.png");
-        SPic3 = new ImageIcon("Pictures/SkillTree/Skill3.png");
-        SPic4 = new ImageIcon("Pictures/SkillTree/Skill4.png");
-        SPic5 = new ImageIcon("Pictures/SkillTree/Skill5.png");
-        SPic6 = new ImageIcon("Pictures/SkillTree/Skill6.png");
-        SPic7 = new ImageIcon("Pictures/SkillTree/Skill7.png");
+        Skill1 = new Skill("1",583,530,"attackBoost");
+        Skill2 = new Skill("2",375,345, "defenseBoost");
+        Skill3 = new Skill("3", 793,345,"healthBoost");
 
-        SBtn1 = new JButton(SPic1);
-        SBtn2 = new JButton(SPic2);
-        SBtn3 = new JButton(SPic3);
-        SBtn4 = new JButton(SPic4);
-        SBtn5 = new JButton(SPic5);
-        SBtn6 = new JButton(SPic6);
-        SBtn7 = new JButton(SPic7);
-
-        SBtn1.setBounds(600,600,100,100);
-        SBtn2.setBounds(600,600,100,100);
-        SBtn3.setBounds(600,600,100,100);
-        SBtn4.setBounds(600,600,100,100);
-        SBtn5.setBounds(600,600,100,100);
-        SBtn6.setBounds(600,600,100,100);
-        SBtn7.setBounds(600,600,100,100);
-
-
-
-
-        SBtn1.setActionCommand("S1");
-        SBtn2.setActionCommand("S2");
-        SBtn3.setActionCommand("S3");
-        SBtn4.setActionCommand("S4");
-        SBtn5.setActionCommand("S5");
-        SBtn6.setActionCommand("S6");
-        SBtn7.setActionCommand("S7");
-
+        SBtn1 = new JButton(Skill1.getIcon());
+        SBtn1.setActionCommand(Skill1.getAbility());
         SBtn1.addActionListener(new ClickStart(this));
-        SBtn2.addActionListener(new ClickStart(this));
-        SBtn3.addActionListener(new ClickStart(this));
-        SBtn4.addActionListener(new ClickStart(this));
-        SBtn5.addActionListener(new ClickStart(this));
-        SBtn6.addActionListener(new ClickStart(this));
-        SBtn7.addActionListener(new ClickStart(this));
-
-
+        SBtn1.setBounds(Skill1.getRect());
         skillPane.add(SBtn1,Integer.valueOf(2));
+
+        SBtn2 = new JButton(Skill2.getIcon());
+        SBtn2.setActionCommand(Skill2.getAbility());
+        SBtn2.addActionListener(new ClickStart(this));
+        SBtn2.setBounds(Skill2.getRect());
         skillPane.add(SBtn2,Integer.valueOf(2));
+
+        SBtn3 = new JButton(Skill3.getIcon());
+        SBtn3.setActionCommand(Skill3.getAbility());
+        SBtn3.addActionListener(new ClickStart(this));
+        SBtn3.setBounds(Skill3.getRect());
         skillPane.add(SBtn3,Integer.valueOf(2));
-        skillPane.add(SBtn4,Integer.valueOf(2));
-        skillPane.add(SBtn5,Integer.valueOf(2));
-        skillPane.add(SBtn6,Integer.valueOf(2));
-        skillPane.add(SBtn7,Integer.valueOf(2));
-
-
 
         JLabel skillBack = new JLabel(skillTree);
         skillBack.setBounds(0,0,1280,820);
@@ -95,6 +72,35 @@ class SkillTree extends JFrame {
         setVisible(true);
         setResizable(false);
     }
+
+    public  Boolean getLock1() {
+        return lock1;
+    }
+
+    public Boolean getLock2() {
+        return lock2;
+    }
+
+    public Boolean getLock3() {
+        return lock3;
+    }
+
+    public Boolean getLock4() {
+        return lock4;
+    }
+
+    public  Boolean getLock5() {
+        return lock5;
+    }
+
+    public  Boolean getLock6() {
+        return lock6;
+    }
+
+    public  Boolean getLock7() {
+        return lock7;
+    }
+
     public static void main(String[] arguments) {}
     class ClickStart implements ActionListener {
         private SkillTree parent;
@@ -114,8 +120,15 @@ class SkillTree extends JFrame {
                     Level newLevel = new Level(1);
                     setVisible(false);
                     break;
-                case "S1":
-
+                case "attackBoost" :
+                    lock1=true;
+                    break;
+                case "defenseBoost":
+                    lock2=true;
+                    break;
+                case "healthBoost":
+                    lock3=true;
+                    break;
 
 
             }

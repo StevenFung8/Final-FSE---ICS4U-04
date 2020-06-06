@@ -154,6 +154,7 @@ class GamePanel extends JPanel implements KeyListener {
         currentEnemy = enemiesQueue.get(enemyCounter);
         this.frame = frame;
     }
+
     public void setLevel(int value){
         level = value;
     }
@@ -226,6 +227,7 @@ class GamePanel extends JPanel implements KeyListener {
 
     public void battle(String word){
         int damage = player.damage(word);
+
         currentEnemy.setHealth(currentEnemy.getHealth()-damage);
         editBattleLogs("You have dealt " + damage + " damage to the enemy!");
         if (currentEnemy.getHealth() <=0){
@@ -621,13 +623,14 @@ class GamePanel extends JPanel implements KeyListener {
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
         public void mouseClicked(MouseEvent e){
-
+            System.out.println(player.getAttackMultiplier());
 
         }
 
         public void mousePressed(MouseEvent e){
             mx = e.getX();
             my = e.getY();
+
 
         }
     }
