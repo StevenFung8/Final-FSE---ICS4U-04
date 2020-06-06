@@ -21,17 +21,13 @@ class Player {
         animation= new Animation(spriteList.getList());
         levelMemory();
         attackMultiplier=1;
-//        if (getLock().SkillTree){
-//            attackMultiplier=2;
-//        }
-
         if (userStats[0]){
             xyz = true;
         }
         if(userStats[1]){
             sixup = true;
         }
-        if(userStats[3]){
+        if(userStats[2]){
             healthup = true;
         }
         if(healthup){
@@ -44,13 +40,10 @@ class Player {
         }
 
     }
-
     public int damage(String word){
         int damage = 0;
         damage += word.length();
-
         damage *= attackMultiplier;
-
         boolean wordXYZCondition = false;
         if(xyz){
             for(int i = 0; i < word.length();i++){
@@ -86,14 +79,10 @@ class Player {
         for(int i = 0; i<userStats.length; i++){
             this.userStats[i] = userStats[i].equals("YES");
         }
-        /*
-        String stats1 = inFile.nextLine();
-        String [] lockStats = stats1.split(",");
-        for (int i = 0; i < lockStats.length;i++){
-            this.lockStats[i] = lockStats[i].equals("UNLOCKED");
-        }
-        inFile.close();
-        */
+
+        String a = inFile.nextLine();
+        String name = inFile.nextLine();
+        username = name;
     }
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
@@ -116,6 +105,7 @@ class Player {
     public Animation getAnimation() {
         return animation;
     }
+    public String getUsername(){return username;}
     public int getAttackMultiplier(){
         return attackMultiplier;
     }
