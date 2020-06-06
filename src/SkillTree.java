@@ -110,6 +110,8 @@ class SkillTree extends JFrame {
                         LevelSelect levels = new LevelSelect();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                     Level newLevel = new Level(1);
                     setVisible(false);

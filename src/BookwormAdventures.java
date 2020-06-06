@@ -12,6 +12,7 @@ import java.net.URL;
 
 public class BookwormAdventures extends JFrame {
     private static int level;
+    private static String username;
     Timer myTimer;
     private Image bookwormIcon;
     GamePanel game;
@@ -27,7 +28,7 @@ public class BookwormAdventures extends JFrame {
         level = levelValue;
         myTimer = new Timer(100, new TickListener());	 // trigger every 100 ms
         myTimer.start();
-        game = new GamePanel(level,this);
+        game = new GamePanel(level,username,this);
         add(game);
 
         setResizable(false);
@@ -90,7 +91,7 @@ class GamePanel extends JPanel implements KeyListener {
     private boolean[] userStats = new boolean[4];
     private boolean [] lockStats = new boolean [4];
 
-    public GamePanel(int value,BookwormAdventures frame) throws IOException {
+    public GamePanel(int value,String username,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
         readLevelMemory();
@@ -101,7 +102,7 @@ class GamePanel extends JPanel implements KeyListener {
         letters = new Letters();
         level = value;
         p = getMousePosition();
-        player = new Player("StyleDaddy",100);
+        player = new Player(username,100);
         enemiesQueue = levelPog.getLevelEnemies();
         int rectCounter = 0;
         enemyCounter = 0;
@@ -133,10 +134,10 @@ class GamePanel extends JPanel implements KeyListener {
             WoodBack = ImageIO.read(new File("Pictures/Interface/WoodBack.png"));
             ResetBtnPic = ImageIO.read(new File("Pictures/Interface/ResetBtn.png"));
             SubmitBtnPic = ImageIO.read(new File("Pictures/Interface/SubmitBtn.png"));
-            ExitBtnPic = ImageIO.read(new File("Pictures/redX.png"));
-            pixelHeart = ImageIO.read(new File("Pictures/pixelHeart.png"));
-            gains = ImageIO.read(new File("Pictures/gains.png"));
-            xyzPic = ImageIO.read(new File("Pictures/xyz.png"));
+            ExitBtnPic = ImageIO.read(new File("Pictures/Interface/redX.png"));
+            pixelHeart = ImageIO.read(new File("Pictures/Interface/pixelHeart.png"));
+            gains = ImageIO.read(new File("Pictures/Interface/gains.png"));
+            xyzPic = ImageIO.read(new File("Pictures/Interface/xyz.png"));
             WoodSign = ImageIO.read(new File("Pictures/Interface/sign.png"));
             BackBtn = ImageIO.read(new File("Pictures/Interface/BackBtn.png"));
             NextBtn = ImageIO.read(new File("Pictures/Interface/NextBtn.png"));
@@ -216,7 +217,10 @@ class GamePanel extends JPanel implements KeyListener {
             battleLogs.add(s);
         }
         else{
-            battleLogs.remove(battleLogs.get(0));
+            int a = battleLogs.size() - 19;
+            for (int i = 0; i < a; i++) {
+                battleLogs.remove(battleLogs.get(0));
+            }
             battleLogs.add(s);
         }
     }
@@ -230,7 +234,6 @@ class GamePanel extends JPanel implements KeyListener {
         editBattleLogs("You have dealt " + damage + " damage to the enemy!");
         if (currentEnemy.getHealth() <=0){
             deathAnimationPlaying=true;
-
             enemyCounter++;
             currentEnemy.setHealth(0);
             if (enemyCounter < enemiesQueue.size()){
@@ -292,6 +295,7 @@ class GamePanel extends JPanel implements KeyListener {
         for (int i = 0; i < lockStats.length;i++){
             this.lockStats[i] = lockStats[i].equals("UNLOCKED");
         }
+
         inFile.close();
 
     }
@@ -346,6 +350,8 @@ class GamePanel extends JPanel implements KeyListener {
                 }
             }
         }
+        file.println("");
+        file.print(player.getUsername());
         file.close();
     }
     public void checkVowels(){
@@ -407,14 +413,16 @@ class GamePanel extends JPanel implements KeyListener {
 
         g.drawImage(player.getAnimation().getSprite(),100,130,null);
 
+        //username
+        g.drawString(player.getUsername(),healthBar.x,20);
         g.fillRect(25,25,player.getMaxHealth()*2+10,30);
         g.fillRect(1045,25,210,30);
         g.setColor(Color.green);
         g.fillRect(healthBar.x,healthBar.y,player.getHealth()*2,healthBar.height);
         g.fillRect(healthBar2.x,healthBar2.y,currentEnemy.getHealth()*2,healthBar2.height);
         g.setColor(Color.red);
-        g.fillRect(healthBar.x+player.getHealth()*2,healthBar.y,200-player.getHealth()*2,healthBar.height);
-        g.fillRect(healthBar2.x+currentEnemy.getHealth()*2,healthBar2.y,200-currentEnemy.getHealth()*2,healthBar2.height);
+        g.fillRect(healthBar.x+player.getHealth()*2,healthBar.y,player.getMaxHealth()*2-player.getHealth()*2,healthBar.height);
+        g.fillRect(healthBar2.x,healthBar2.y,currentEnemy.getHealth()*2,healthBar2.height);
         if(deathAnimationPlaying) {
             g.drawImage(deathAnimation.getSprite(), deathAnimation.getSpritePosX(), deathAnimation.getSpritePosY(), null);
         }
@@ -426,6 +434,7 @@ class GamePanel extends JPanel implements KeyListener {
         if(currentEnemy!=null) {
             g.setColor(Color.BLACK);
             g.drawString(currentEnemy.getName(),1050,20);
+            g.setColor(Color.green);
             g.drawString(Integer.toString(currentEnemy.getHealth()),1140, 47);
         }
         if (resetButton.contains(mx, my)) {

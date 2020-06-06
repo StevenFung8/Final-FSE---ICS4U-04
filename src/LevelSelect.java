@@ -11,11 +11,16 @@ import java.util.Scanner;
 class LevelSelect extends JFrame {
     private boolean [] userStats = new boolean[4];
     private boolean [] lockStats = new boolean[4];
-    public LevelSelect() throws FileNotFoundException {
+    private boolean writeName = false;
+    private String username;
+    public LevelSelect() throws IOException {
         super("Bookworm Adventures");
         setSize(1280, 820);
         JLayeredPane layeredPane = new JLayeredPane();
         levelMemory();
+        if(writeName){
+            writeUsername(username);
+        }
         System.out.println(Arrays.toString(userStats));
         System.out.println(Arrays.toString(lockStats));
         ImageIcon backPic = new ImageIcon("Pictures/Backgrounds/LevelSelectBack.png");
@@ -28,6 +33,14 @@ class LevelSelect extends JFrame {
         Image smallOnePic = onePic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         oneIcon = new ImageIcon(smallOnePic);
         JButton oneBtn = new JButton(oneIcon);
+        JLabel levelOneLabel = new JLabel();
+        levelOneLabel.setText("1");
+        levelOneLabel.setBounds(310,155,25,50);
+        levelOneLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelOneLabel.setForeground(Color.BLACK);
+        layeredPane.add(levelOneLabel, Integer.valueOf(3));
+        System.out.println(levelOneLabel.getText());
+
         if(!lockStats[0]){
             oneBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
@@ -50,6 +63,12 @@ class LevelSelect extends JFrame {
         Image smallTwoPic = twoPic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         twoIcon = new ImageIcon(smallTwoPic);
         JButton twoBtn = new JButton(twoIcon);
+        JLabel levelTwoLabel = new JLabel();
+        levelTwoLabel.setText("2");
+        levelTwoLabel.setBounds(660,155,25,50);
+        levelTwoLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelTwoLabel.setForeground(Color.BLACK);
+        layeredPane.add(levelTwoLabel,Integer.valueOf(3));
         if(!lockStats[1]){
             twoBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
@@ -73,6 +92,12 @@ class LevelSelect extends JFrame {
         Image smallThreePic = threePic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         threeIcon = new ImageIcon(smallThreePic);
         JButton threeBtn = new JButton(threeIcon);
+        JLabel levelThreeLabel = new JLabel();
+        levelThreeLabel.setText("3");
+        levelThreeLabel.setBounds(310,450,25,50);
+        levelThreeLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelThreeLabel.setForeground(Color.BLACK);
+        layeredPane.add(levelThreeLabel,Integer.valueOf(3));
         if(!lockStats[2]){
             threeBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
@@ -95,6 +120,12 @@ class LevelSelect extends JFrame {
         Image smallFourPic = fourPic.getScaledInstance(300, 169, Image.SCALE_SMOOTH);
         fourIcon = new ImageIcon(smallFourPic);
         JButton fourBtn = new JButton(fourIcon);
+        JLabel levelFourLabel = new JLabel();
+        levelFourLabel.setText("4");
+        levelFourLabel.setBounds(660,450,25,50);
+        levelFourLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelFourLabel.setForeground(Color.BLACK);
+        layeredPane.add(levelFourLabel,Integer.valueOf(3));
         if(!lockStats[3]){
             fourBtn.setBorder(BorderFactory.createLineBorder(Color.RED,4));
         }
@@ -197,7 +228,7 @@ class LevelSelect extends JFrame {
             }
         }
     }
-    public void levelMemory() throws FileNotFoundException {
+    public void levelMemory() throws IOException {
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
 
         String stats = inFile.nextLine();
@@ -209,6 +240,12 @@ class LevelSelect extends JFrame {
         String [] lockStats = stats1.split(",");
         for (int i = 0; i < lockStats.length;i++){
             this.lockStats[i] = lockStats[i].equals("UNLOCKED");
+        }
+
+        if(!inFile.hasNextLine()){
+            username = JOptionPane.showInputDialog("Name:");
+            writeName = true;
+
         }
         inFile.close();
 
@@ -225,6 +262,13 @@ class LevelSelect extends JFrame {
             file.print("LOCKED,");
         }
         file.print("LOCKED");
+        file.close();
+    }
+
+    public void writeUsername(String s) throws IOException {
+        PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/levelMemory.txt",true)));
+        file.println("");
+        file.print(s);
         file.close();
     }
 

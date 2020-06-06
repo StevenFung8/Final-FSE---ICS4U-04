@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class StartMenu extends JFrame implements ActionListener{
     private JLayeredPane layeredPane=new JLayeredPane();
@@ -87,6 +88,8 @@ public class StartMenu extends JFrame implements ActionListener{
                     try {
                         LevelSelect levels = new LevelSelect();
                     } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                     Level newLevel = new Level(1);
