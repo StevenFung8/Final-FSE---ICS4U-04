@@ -52,8 +52,16 @@ public class BookwormAdventures extends JFrame {
                 game.update();
                 game.repaint();
                 game.moveBack();
-                game.checkBattleLogs();
-                game.checkVowels();
+                try {
+                    game.checkBattleLogs();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    game.checkVowels();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 game.trackMousePosition();
 
             }
@@ -77,11 +85,11 @@ class GamePanel extends JPanel implements KeyListener {
     private ArrayList<String> alphabet;
     private ArrayList<String> battleLogs = new ArrayList<>();
     private ArrayList<String> chosenWords = new ArrayList<String>();
-    private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton,exitButton,powerUp1,powerUp2,powerUp3;
+    private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton,exitButton,powerUp1,powerUp2,powerUp3,enemyBuff;
     private String selectedWord = "";
-    private static Image WoodBack, ResetBtnPic, SubmitBtnPic,WoodSign,BackBtn,ExitBtnPic,NextBtn,pixelHeart,gains,xyzPic;
+    private static Image WoodBack, ResetBtnPic, SubmitBtnPic,WoodSign,BackBtn,ExitBtnPic,NextBtn,pixelHeart,gains,xyzPic,fireBall,breeze,iceCube,droplet;
     private int BackVal;
-    private boolean moveBack,winCondition,exitCondition;
+    private boolean moveBack,winCondition,exitCondition,loseCondition;
     private BookwormAdventures frame;
     private Boolean animationPlaying, deathAnimationPlaying;
     private int stage;
@@ -98,6 +106,7 @@ class GamePanel extends JPanel implements KeyListener {
         nativeBattleLogsCount = 0;
         winCondition = false;
         exitCondition = false;
+        loseCondition = false;
         levelPog = new Level(value);
         letters = new Letters();
         level = value;
@@ -112,8 +121,8 @@ class GamePanel extends JPanel implements KeyListener {
                 rectCounter++;
             }
         }
-        resetButton = new Rectangle(400,720,245,62);
-        submitButton = new Rectangle(645,720,244,62);
+        resetButton = new Rectangle(400,725,245,62);
+        submitButton = new Rectangle(645,725,244,62);
         healthBar = new Rectangle(30,30,200,20);
         healthBar2 = new Rectangle(1050,30,200,20);
         nextButton = new Rectangle(400,490,200,100);
@@ -122,6 +131,7 @@ class GamePanel extends JPanel implements KeyListener {
         powerUp1 = new Rectangle(30,60,50,50);
         powerUp2 = new Rectangle(90,60,50,50);
         powerUp3 = new Rectangle(150,60,50,50);
+        enemyBuff = new Rectangle(1050,75,50,50);
         stage=0;
         deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",9);
         deathAnimation = new Animation(deathSpriteList.getList());
@@ -141,12 +151,31 @@ class GamePanel extends JPanel implements KeyListener {
             WoodSign = ImageIO.read(new File("Pictures/Interface/sign.png"));
             BackBtn = ImageIO.read(new File("Pictures/Interface/BackBtn.png"));
             NextBtn = ImageIO.read(new File("Pictures/Interface/NextBtn.png"));
+            fireBall = ImageIO.read(new File("Pictures/Interface/fireball.png"));
+            iceCube = ImageIO.read(new File("Pictures/Interface/iceCube.png"));
+            droplet = ImageIO.read(new File("Pictures/Interface/water.png"));
+            breeze = ImageIO.read(new File("Pictures/Interface/wind.png"));
 
         }
         catch (IOException e) {
             System.out.println(e);
         }
         battleLogs.add("Welcome to Bookworm Adventures");
+
+        switch (level){
+            case 1:
+                battleLogs.add("You are in the Fire World!");
+                break;
+            case 2:
+                battleLogs.add("You are in the Ice World!");
+                break;
+            case 3:
+                battleLogs.add("You are in the Sky World");
+                break;
+            case 4:
+                battleLogs.add("You are in the Water World!");
+                break;
+        }
         animationPlaying=true;
         deathAnimationPlaying=false;
         BackVal=0;
@@ -206,49 +235,106 @@ class GamePanel extends JPanel implements KeyListener {
         selectedWord="";
         mouseReset();
     }
-    public void checkBattleLogs(){
+    public void checkBattleLogs() throws IOException {
         if(player.getNativeBattleLogs().size() > nativeBattleLogsCount){
             battleLogs.add(player.getNativeBattleLogs().get(player.getNativeBattleLogs().size() - 1));
             nativeBattleLogsCount ++;
         }
     }
-    public void editBattleLogs(String s){
-        if(battleLogs.size() <= 19){
+    public int CountTextFileLines() throws FileNotFoundException {
+        int counter = 1;
+        Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/battleLogs.txt")));
+        while(inFile.hasNextLine()){
+            counter ++;
+        }
+        return counter;
+    }
+
+    public void editBattleLogs(String s) throws IOException {
+        if(battleLogs.size() <= 18){
             battleLogs.add(s);
         }
         else{
-            int a = battleLogs.size() - 19;
+            int a = battleLogs.size() - 18;
             for (int i = 0; i < a; i++) {
                 battleLogs.remove(battleLogs.get(0));
             }
             battleLogs.add(s);
         }
+
+
     }
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
     }
 
-    public void battle(String word){
-        int damage = player.damage(word);
-        currentEnemy.setHealth(currentEnemy.getHealth()-damage);
-        editBattleLogs("You have dealt " + damage + " damage to the enemy!");
-        if (currentEnemy.getHealth() <=0){
-            deathAnimationPlaying=true;
-            enemyCounter++;
-            currentEnemy.setHealth(0);
-            if (enemyCounter < enemiesQueue.size()){
-                currentEnemy = enemiesQueue.get(enemyCounter);
-                moveBack=true;
+    public void battle(String word) throws IOException {
+        if(currentEnemy.getWorldBuff().equals("Fire Buff")){
+            player.setHealth(player.getHealth() - 5);
+        }
+        int missChance = randint(0,9);
+        if (missChance != 9) {
+            int damage = 0;
+            if(currentEnemy.getWorldBuff().equals("Ice Buff")) {
+                damage = (int)(player.damage(word) * 0.8);
             }
             else{
-                winCondition = true;
-                editBattleLogs("You have won this battle!");
+                damage = player.damage(word);
             }
-            editBattleLogs("This enemy has been defeated!");
+            currentEnemy.setHealth(currentEnemy.getHealth() - damage);
+            if(currentEnemy.getWorldBuff().equals("Sky Buff")){
+                int chance = randint(0,6);
+                if (chance == 5){
+                    player.setHealth(player.getHealth() - damage);
+                }
+            }
+            editBattleLogs("You have dealt " + damage + " damage to the enemy!");
+            if (currentEnemy.getHealth() <= 0) {
+                deathAnimationPlaying = true;
+                enemyCounter++;
+                currentEnemy.setHealth(0);
+                if (enemyCounter < enemiesQueue.size()) {
+                    currentEnemy = enemiesQueue.get(enemyCounter);
+                    moveBack = true;
+                    if (player.getHealth() + 40 > player.getMaxHealth()) {
+                        player.setHealth(player.getMaxHealth());
+                    }
+                    else{
+                        player.setHealth(player.getHealth() +40);
+                    }
+                    editBattleLogs("You have gained 40 health after winning that battle!");
+                    chosenWords.clear();
+                }
+
+                else {
+                    winCondition = true;
+                    editBattleLogs("You have won this battle!");
+                }
+                editBattleLogs("This enemy has been defeated!");
+            }
+            else {
+                int stunChance = randint(0,8);
+                if(stunChance != 8) {
+                    int enemyDamage = currentEnemy.doDamage();
+                    if(currentEnemy.getWorldBuff().equals("Water Buff")){
+                        enemyDamage += chosenWords.size();
+                    }
+                    player.setHealth(player.getHealth() - enemyDamage);
+                    editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you!");
+                }
+                else{
+                    editBattleLogs("You have stunned your enemy!");
+                    editBattleLogs("They cannot deal damage to you this turn");
+                }
+            }
         }
         else{
-            int enemyDamage = randint(1,15);
-            player.setHealth(player.getHealth()- enemyDamage);
+            int enemyDamage = currentEnemy.doDamage();
+            if(currentEnemy.getWorldBuff().equals("Water Buff")){
+                enemyDamage += chosenWords.size();
+            }
+            player.setHealth(player.getHealth() - enemyDamage);
+            editBattleLogs("Your attack missed!");
             editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you!");
         }
         if (enemyCounter > enemiesQueue.size()){
@@ -354,16 +440,17 @@ class GamePanel extends JPanel implements KeyListener {
         file.print(player.getUsername());
         file.close();
     }
-    public void checkVowels(){
+    public void checkVowels() throws IOException {
         int checkVowelsCount = 0;
         for (String a: alphabet){
-            if (a.equals("a") || a.equals("e") || a.equals("i") || a.equals("o") || a.equals("u")){
+            if (a.toLowerCase().equals("a") || a.toLowerCase().equals("e") || a.toLowerCase().equals("i") || a.toLowerCase().equals("o") || a.toLowerCase().equals("u")){
                 checkVowelsCount ++;
             }
         }
         if (checkVowelsCount == 0){
             alphabet = letters.randomXletters(16);
-            editBattleLogs("There we no vowels, so your board has been reshuffled!");
+            System.out.println("NO VOWALS");
+            editBattleLogs("There were no vowels, so your board has been reshuffled!");
         }
     }
     public void trackMousePosition(){
@@ -380,9 +467,6 @@ class GamePanel extends JPanel implements KeyListener {
         g.drawImage(levelPog.getBack(),BackVal,0,this);
         g.drawImage(levelPog.getBack(),1280+BackVal,0,this);
         g.setColor(Color.BLACK);
-        g.fillRect(0, 240, 1280, 20);
-        g.fillRect(400, 240, 10, 480);
-        g.fillRect(880, 240, 10, 480);
         g.drawImage(WoodBack,0,260,this);
         g.drawImage(WoodBack,890,260,this);
 //        g.setColor(Color.BLUE);
@@ -410,8 +494,16 @@ class GamePanel extends JPanel implements KeyListener {
         g.drawImage(ResetBtnPic,resetButton.x,resetButton.y,this);
         g.drawImage(SubmitBtnPic,submitButton.x,submitButton.y,this);
         g.drawImage(ExitBtnPic,exitButton.x,exitButton.y,this);
-
         g.drawImage(player.getAnimation().getSprite(),100,130,null);
+        g.fillRect(0, 240, 1280, 20);
+        g.fillRect(400, 240, 10, 580);
+        g.fillRect(880, 240, 10, 580);
+        g.fillRect(400,720,490,5);
+        /*
+        resetButton = new Rectangle(400,725,245,62);
+        submitButton = new Rectangle(645,725,244,62);
+         */
+        g.fillRect(643,720,4,100);
 
         //username
         g.drawString(player.getUsername(),healthBar.x,20);
@@ -448,23 +540,35 @@ class GamePanel extends JPanel implements KeyListener {
         }
         if (selectedWord.length() > 0) {
             for (int i = 0; i < selectedWord.length(); i++) {
-                g.drawImage(Letters.getImage("SMALL", String.valueOf(selectedWord.charAt(i))), 200 + 55 * i, 100, this);
+                g.drawImage(Letters.getImage("SMALL", String.valueOf(selectedWord.charAt(i))), 210 + 55 * i, 100, this);
             }
         }
         if (submitButton.contains(mx, my)) {
             if (selectedWord.length() > 1) {
                 if (letters.checkWord(selectedWord)) {
                     chosenWords.add(selectedWord);
-                    battle(selectedWord);
+                    try {
+                        battle(selectedWord);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     slotReplace();
                 }
                 else if (!letters.checkWord(selectedWord)) {
-                    editBattleLogs("That is not a valid word");
+                    try {
+                        editBattleLogs("That is not a valid word");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     mouseReset();
                 }
             }
             else{
-                editBattleLogs("That is not valid word");
+                try {
+                    editBattleLogs("That is not valid word");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 mouseReset();
             }
         }
@@ -482,11 +586,34 @@ class GamePanel extends JPanel implements KeyListener {
 
         if(battleLogs.size() > 0) {
             for (int i = 0; i < battleLogs.size(); i++) {
-                g.setFont(new Font("Times New Roman",Font.PLAIN,15));
+                g.setFont(new Font("Times New Roman",Font.PLAIN,16));
                 g.setColor(Color.DARK_GRAY);
                 if(300 + i *25 > 800){
                     battleLogs.remove(battleLogs.get(0));
-
+                }
+                String currentBattleLog = battleLogs.get(i).substring(0,13);
+                switch (currentBattleLog) {
+                    case "The enemy has":
+                        g.setColor(Color.blue);
+                        break;
+                    case "Your attack m":
+                        g.setColor(Color.gray);
+                        break;
+                    case "You have stun":
+                        g.setColor(new Color(128,0,128));
+                        break;
+                    case "You have gain":
+                        g.setColor(new Color(1,121,81));
+                        break;
+                    case "This attack d":
+                        g.setColor(Color.magenta);
+                        break;
+                    case "That is not a":
+                        g.setColor(Color.red);
+                        break;
+                    default:
+                        g.setColor(Color.black);
+                        break;
                 }
                 g.drawString(battleLogs.get(i), 20, 300 + i * 25);
             }
@@ -505,50 +632,54 @@ class GamePanel extends JPanel implements KeyListener {
             g.drawImage(pixelHeart,powerUp3.x,powerUp2.y,this);
         }
         if (winCondition){
+            if(level != 4) {
+                g.drawImage(WoodSign, 640 - (WoodSign.getWidth(null) / 2), 210, null);
+                g.setColor(Color.black);
+                g.drawRect(backButton.x, backButton.y, backButton.width, backButton.height);
+                g.drawRect(nextButton.x, nextButton.y, nextButton.width, nextButton.height);
+                g.drawImage(BackBtn, backButton.x, backButton.y, null);
+                g.drawImage(NextBtn, nextButton.x, nextButton.y, null);
 
-            g.drawImage(WoodSign,640-(WoodSign.getWidth(null)/2),210,null);
-            g.setColor(Color.black);
-            g.drawRect(backButton.x,backButton.y,backButton.width,backButton.height);
-            g.drawRect(nextButton.x,nextButton.y,nextButton.width,nextButton.height);
-            g.drawImage(BackBtn,backButton.x,backButton.y,null);
-            g.drawImage(NextBtn,nextButton.x,nextButton.y,null);
 
-
-            if(level == 1){
-                g.drawString("You have gained this powerup: ", 475,375);
-                g.drawImage(xyzPic,625,390,this);
-                g.setFont(new Font("Times New Roman",Font.PLAIN,12));
-                g.drawString("If your word contains x,y, or z, your word will do two times the damage for each one of those letters", 400,455);
-            }
-            if(level ==2){
-                g.drawString("You have gained this powerup: ", 475,375);
-                g.drawImage(gains,625,390,this);
-                g.setFont(new Font("Times New Roman",Font.PLAIN,12));
-                g.drawString("If your word is six or more letters, it will do 50% more damage", 450,455);
-            }
-            if(level ==3){
-                g.drawString("You have gained this powerup: ", 475,375);
-                g.drawImage(pixelHeart,625,390,this);
-                g.setFont(new Font("Times New Roman",Font.PLAIN,12));
-                g.drawString("You have gained 20 extra max Health!", 450,455);
-            }
-            if(backButton.contains(mx,my)){
-                try {
-                    changeLevelMemory();
-                    LevelSelect backTo = new LevelSelect();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (level == 1) {
+                    g.drawString("You have gained this powerup: ", 475, 375);
+                    g.drawImage(xyzPic, 625, 390, this);
+                    g.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+                    g.drawString("If your word contains x,y, or z, your word will do two times the damage for each one of those letters", 400, 455);
                 }
-                frame.setVisible(false);
-            }
-            if(nextButton.contains(mx,my)){
-                try {
-                    changeLevelMemory();
-                    BookwormAdventures nextLevel = new BookwormAdventures(level+1);
+                if (level == 2) {
+                    g.drawString("You have gained this powerup: ", 475, 375);
+                    g.drawImage(gains, 625, 390, this);
+                    g.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+                    g.drawString("If your word is six or more letters, it will do 50% more damage", 450, 455);
+                }
+                if (level == 3) {
+                    g.drawString("You have gained this powerup: ", 475, 375);
+                    g.drawImage(pixelHeart, 625, 390, this);
+                    g.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+                    g.drawString("You have gained 20 extra max Health!", 450, 455);
+                }
+                if (backButton.contains(mx, my)) {
+                    try {
+                        changeLevelMemory();
+                        LevelSelect backTo = new LevelSelect();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     frame.setVisible(false);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                if (nextButton.contains(mx, my)) {
+                    try {
+                        changeLevelMemory();
+                        BookwormAdventures nextLevel = new BookwormAdventures(level + 1);
+                        frame.setVisible(false);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else{
+                System.out.println("you have won the game");
             }
         }
 
@@ -595,7 +726,7 @@ class GamePanel extends JPanel implements KeyListener {
                 g.fillRect(powerUp2.x, powerUp2.y + powerUp2.height + 5, 760, 25);
                 g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 g.setColor(Color.black);
-                g.drawString("This powerup makes any word that contains 6 or more letters deal 50% the amount of damage", powerUp2.x + 3, powerUp2.y + powerUp2.height + 21);
+                g.drawString("This powerup makes any word that contains 5 or more letters deal 50% the amount of damage", powerUp2.x + 3, powerUp2.y + powerUp2.height + 21);
             }
         }
         if(player.getHealthUp()) {
@@ -605,6 +736,48 @@ class GamePanel extends JPanel implements KeyListener {
                 g.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 g.setColor(Color.black);
                 g.drawString("This powerup gives you an extra 20 health!", powerUp3.x + 3, powerUp3.y + powerUp3.height + 21);
+            }
+        }
+        if(loseCondition){
+            g.drawImage(WoodSign,640-(WoodSign.getWidth(null)/2),210,null);
+            g.setColor(Color.black);
+            g.drawRect(backButton.x,backButton.y,backButton.width,backButton.height);
+            g.drawImage(BackBtn,backButton.x,backButton.y,null);
+        }
+        if(currentEnemy.getWorldBuff().equals("Fire Buff")){
+            g.drawImage(fireBall,enemyBuff.x,enemyBuff.y,this);
+        }
+        if(currentEnemy.getWorldBuff().equals("Ice Buff")){
+            g.drawImage(iceCube,enemyBuff.x,enemyBuff.y,this);
+        }
+        if(currentEnemy.getWorldBuff().equals("Sky Buff")){
+            g.drawImage(breeze,enemyBuff.x,enemyBuff.y,this);
+        }
+        if(currentEnemy.getWorldBuff().equals("Water Buff")){
+            g.drawImage(droplet,enemyBuff.x,enemyBuff.y,this);
+        }
+        if(enemyBuff.contains(p.x,p.y)) {
+            g.setColor(Color.black);
+            System.out.println(currentEnemy.getWorldBuff());
+            if(currentEnemy.getWorldBuff().equals("Fire Buff")) {
+                g.fillRect(595,85,375,27);
+                g.setColor(Color.white);
+                g.drawString("The enemies burn you, dealing 5 extra damage per round", 600, 100);
+            }
+            if (currentEnemy.getWorldBuff().equals("Ice Buff")) {
+                g.fillRect(595,85,375,27);
+                g.setColor(Color.white);
+                g.drawString("Encased in ice, your attacks deal 20% less damage", 600, 100);
+            }
+            if(currentEnemy.getWorldBuff().equals("Sky Buff")) {
+                g.fillRect(345,85,575,27);
+                g.setColor(Color.white);
+                g.drawString("Your attacks have a chance to be deflected back ,dealing 50% of the damage back to you", 350, 100);
+            }
+            if(currentEnemy.getWorldBuff().equals("Water Buff")){
+                g.fillRect(345,85,580,27);
+                g.setColor(Color.white);
+                g.drawString("The enemy deals extra damage based on the amount of words you have submitted this battle",350,100);
             }
         }
     }

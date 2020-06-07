@@ -62,7 +62,7 @@ class Player {
                 damage = (int) (damage * 1.5);
                 nativeBattleLogs.add("This attack did 1.5 times the amount due to your Big Word treasure!");
             }
-         }
+        }
         return damage;
     }
     public int getHealth(){
@@ -107,3 +107,5 @@ class Player {
     }
     public String getUsername(){return username;}
 }
+
+
