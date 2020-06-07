@@ -1,26 +1,34 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 class Player {
-    private int health,score,maxHealth,attackMultiplier;
+    private int health,score,maxHealth,attackMultiplier,defense,sPoints;
     private String username;
     private boolean sixup,healthup,xyz;
     private ArrayList<String> nativeBattleLogs = new ArrayList<>();
     private SpriteList spriteList;
     private Animation animation;
     private boolean [] userStats = new boolean[4];
-    public Player(String a,int h) throws FileNotFoundException {
+    private boolean[] skillLocks = new boolean[7];
+
+    public Player(String a,int h) throws IOException {
         username = a;
         sixup = false;
         healthup = false;
         xyz = false;
         spriteList=new SpriteList("Pictures/Player",3);
         animation= new Animation(spriteList.getList());
+
         levelMemory();
+        skillMemory();
+        System.out.println(Arrays.toString(skillLocks));
         attackMultiplier=1;
+        defense=0;
         if (userStats[0]){
             xyz = true;
         }
@@ -39,8 +47,23 @@ class Player {
             maxHealth = h;
         }
 
+        if(skillLocks[0]){
+            attackMultiplier=2;
+            System.out.println("attackmult");
+        }
+        if(skillLocks[1]){
+            defense=1;
+            System.out.println("defense");
+        }
+        if(skillLocks[2]){
+            maxHealth*=1.5;
+            health*=1.5;
+        }
+
+
+
     }
-    public int damage(String word){
+    public int damage(String word) {
         int damage = 0;
         damage += word.length();
         damage *= attackMultiplier;
@@ -84,6 +107,17 @@ class Player {
         String name = inFile.nextLine();
         username = name;
     }
+    public void skillMemory() throws IOException{
+        Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/skillMemory.txt")));
+
+        String stats = inFile.nextLine();
+        String [] skillStats = stats.split(",");
+        System.out.println(Arrays.toString(skillStats));
+        for(int i = 0; i<skillStats.length; i++){
+            skillLocks[i] = skillStats[i].equals("UNLOCKED");
+        }
+        inFile.close();
+    }
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
     }
@@ -104,6 +138,9 @@ class Player {
     }
     public Animation getAnimation() {
         return animation;
+    }
+    public int getDefense(){
+        return defense;
     }
     public String getUsername(){return username;}
     public int getAttackMultiplier(){

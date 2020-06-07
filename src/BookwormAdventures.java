@@ -229,7 +229,7 @@ class GamePanel extends JPanel implements KeyListener {
         return (int)(Math.random()*(high-low+1)+low);
     }
 
-    public void battle(String word){
+    public void battle(String word) throws IOException {
         int damage = player.damage(word);
 
         currentEnemy.setHealth(currentEnemy.getHealth()-damage);
@@ -245,11 +245,13 @@ class GamePanel extends JPanel implements KeyListener {
             else{
                 winCondition = true;
                 editBattleLogs("You have won this battle!");
+
             }
             editBattleLogs("This enemy has been defeated!");
         }
         else{
             int enemyDamage = randint(1,15);
+            enemyDamage -= player.getDefense();//subtract damage absorbed
             player.setHealth(player.getHealth()- enemyDamage);
             editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you!");
         }
@@ -257,6 +259,7 @@ class GamePanel extends JPanel implements KeyListener {
             currentEnemy = null;
             winCondition = true;
             editBattleLogs("YOU HAVE WON");
+            sPointAdd();
 
         }
     }
@@ -264,6 +267,15 @@ class GamePanel extends JPanel implements KeyListener {
     public void addNotify() {
         super.addNotify();
         ready = true;
+    }
+    public void sPointAdd() throws IOException {
+        Scanner file = new Scanner(new BufferedReader(new FileReader("Text Files/skillMemory.txt")));
+        String s = file.nextLine();
+        int n = file.nextInt();
+        PrintWriter newFile = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/skillMemory.txt")));
+        newFile.print(s);
+        newFile.println("");
+        newFile.print(n+1);
     }
 
     public Animation getAnimation(){
@@ -282,7 +294,6 @@ class GamePanel extends JPanel implements KeyListener {
 
             }
         }
-
     }
     public void readLevelMemory() throws FileNotFoundException {
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
@@ -457,7 +468,11 @@ class GamePanel extends JPanel implements KeyListener {
             if (selectedWord.length() > 1) {
                 if (letters.checkWord(selectedWord)) {
                     chosenWords.add(selectedWord);
-                    battle(selectedWord);
+                    try {
+                        battle(selectedWord);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     slotReplace();
                 }
                 else if (!letters.checkWord(selectedWord)) {

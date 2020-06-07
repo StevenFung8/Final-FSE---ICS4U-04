@@ -1,3 +1,5 @@
+import com.sun.jdi.IntegerValue;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -14,8 +16,10 @@ class SkillTree extends JFrame {
     private JButton SBtn1, SBtn2, SBtn3, SBtn4, SBtn5, SBtn6, SBtn7;
     private Skill Skill1, Skill2, Skill3;
     private Boolean lock1, lock2, lock3, lock4, lock5, lock6, lock7;
+    private Boolean[] skillLocks;
+    private int sPoints;
 
-    public SkillTree() throws FileNotFoundException {
+    public SkillTree() throws IOException {
         super("Bookworm Adventures");
         setSize(1280, 820);
         skillPane = new JLayeredPane();
@@ -26,6 +30,7 @@ class SkillTree extends JFrame {
         lock5 =false;
         lock6 =false;
         lock7 =false;
+        skillLocks = new Boolean[7];
 
         skillTree = new ImageIcon("Pictures/Backgrounds/SkillTree.png");
         backBtnPic = new ImageIcon("Pictures/StartMenu/BackButton.png");
@@ -35,19 +40,19 @@ class SkillTree extends JFrame {
 
         SBtn1 = new JButton(Skill1.getIcon());
         SBtn1.setActionCommand(Skill1.getAbility());
-        SBtn1.addActionListener(new ClickStart(this));
+        SBtn1.addActionListener(new ClickStart(skillPane));
         SBtn1.setBounds(Skill1.getRect());
         skillPane.add(SBtn1,Integer.valueOf(2));
 
         SBtn2 = new JButton(Skill2.getIcon());
         SBtn2.setActionCommand(Skill2.getAbility());
-        SBtn2.addActionListener(new ClickStart(this));
+        SBtn2.addActionListener(new ClickStart(skillPane));
         SBtn2.setBounds(Skill2.getRect());
         skillPane.add(SBtn2,Integer.valueOf(2));
 
         SBtn3 = new JButton(Skill3.getIcon());
         SBtn3.setActionCommand(Skill3.getAbility());
-        SBtn3.addActionListener(new ClickStart(this));
+        SBtn3.addActionListener(new ClickStart(skillPane));
         SBtn3.setBounds(Skill3.getRect());
         skillPane.add(SBtn3,Integer.valueOf(2));
 
@@ -59,11 +64,11 @@ class SkillTree extends JFrame {
         JButton backBtn = new JButton(backBtnPic);
         backBtn.setBorder(new LineBorder(Color.BLACK));
         backBtn.setActionCommand("back");
-        backBtn.addActionListener(new ClickStart(this));
+        backBtn.addActionListener(new ClickStart(skillPane));
         backBtn.setBounds(50,700,300,100);
         skillPane.add(backBtn,Integer.valueOf(2));
-
-
+        skillMemory();
+        System.out.println(Arrays.toString(skillLocks));
 
 
 
@@ -73,39 +78,63 @@ class SkillTree extends JFrame {
         setResizable(false);
     }
 
-    public  Boolean getLock1() {
-        return lock1;
-    }
+    public void skillMemory() throws IOException {
+        Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/skillMemory.txt")));
 
-    public Boolean getLock2() {
-        return lock2;
-    }
+        String stats = inFile.nextLine();
+        String [] skillStats = stats.split(",");
+        System.out.println(Arrays.toString(skillStats));
+        for(int i = 0; i<skillStats.length; i++){
+            skillLocks[i] = skillStats[i].equals("UNLOCKED");
+        }
+        sPoints = inFile.nextInt();
 
-    public Boolean getLock3() {
-        return lock3;
+        inFile.close();
     }
-
-    public Boolean getLock4() {
-        return lock4;
+    public void clearSkillMemory() throws IOException {
+        PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/skillMemory.txt")));
+        for (int i = 0; i<6;i++){
+            file.print("LOCKED,");
+        }
+        file.print("LOCKED");
+        file.close();
     }
+    public void changeSkillMemory(int n) throws IOException{
+        PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/skillMemory.txt")));
+        skillLocks[n]=true;
+        for (int i = 0; i<6; i++){
+            String s = skillLocks[i].toString();
+            if (s.equals("false")){
+                file.print("LOCKED,");
+            }
+            else if(s.equals("true")){
+                file.print("UNLOCKED,");
+            }
+        }
+        if(skillLocks[6]){
+            file.print("UNLOCKED");
+        }
+        else if(!skillLocks[6]){
+            file.print("LOCKED");
+        }
+        sPoints-=1;
+        file.println("");
+        file.print(sPoints);
+        file.close();
 
-    public  Boolean getLock5() {
-        return lock5;
+
     }
-
-    public  Boolean getLock6() {
-        return lock6;
-    }
-
-    public  Boolean getLock7() {
-        return lock7;
-    }
-
     public static void main(String[] arguments) {}
     class ClickStart implements ActionListener {
-        private SkillTree parent;
-        public ClickStart(SkillTree parent){
-            this.parent=parent;
+
+        private JLabel text1;
+        private ImageIcon textPic1;
+        private JLayeredPane skillPane;
+        public ClickStart(JLayeredPane jLayeredPane){
+            skillPane = jLayeredPane;
+            textPic1 = new ImageIcon("Pictures/SkillTree/insufficientText.png");
+            text1= new JLabel(textPic1);
+            text1.setBounds(640-);
         }
         @Override
 
@@ -123,17 +152,36 @@ class SkillTree extends JFrame {
                     setVisible(false);
                     break;
                 case "attackBoost" :
-                    lock1=true;
+                    if(sPoints>0) {
+                        try {
+                            changeSkillMemory(0);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else{
+
+                        skillPane.add(text1, Integer.valueOf(3));
+                    }
                     break;
                 case "defenseBoost":
-                    lock2=true;
+                    try {
+                        changeSkillMemory(1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "healthBoost":
-                    lock3=true;
+                    try {
+                        changeSkillMemory(2);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
 
             }
         }
+
     }
 }

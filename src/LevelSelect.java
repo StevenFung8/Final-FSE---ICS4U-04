@@ -219,6 +219,7 @@ class LevelSelect extends JFrame {
                         setVisible(false);
                     case "skill":
                         SkillTree sTree = new SkillTree();
+                        setVisible(false);
                         break;
 
 
