@@ -134,7 +134,7 @@ class SkillTree extends JFrame {
             skillPane = jLayeredPane;
             textPic1 = new ImageIcon("Pictures/SkillTree/insufficientText.png");
             text1= new JLabel(textPic1);
-            text1.setBounds(640-);
+//            text1.setBounds(640-);
         }
         @Override
 
