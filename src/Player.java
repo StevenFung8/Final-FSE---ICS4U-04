@@ -6,29 +6,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+
+//Player.java
+//Dylan Tan and Steven Fung
+//This is the object class for all the players stats
 class Player {
     private int health,score,maxHealth,attackMultiplier,defense,sPoints;
     private String username;
-    private boolean sixup,healthup,xyz;
-    private ArrayList<String> nativeBattleLogs = new ArrayList<>();
+    private boolean sixup,healthup,xyz; //powerups
+    private ArrayList<String> nativeBattleLogs = new ArrayList<>();//messages to send to GamePanel
     private SpriteList spriteList;
     private Animation animation;
     private boolean [] userStats = new boolean[4];
     private boolean[] skillLocks = new boolean[7];
 
-    public Player(String a,int h) throws IOException {
+    public Player(String a,int h) throws IOException { //constructor to set base stats
         username = a;
         sixup = false;
         healthup = false;
         xyz = false;
         spriteList=new SpriteList("Pictures/Player",3);
         animation= new Animation(spriteList.getList());
-
         levelMemory();
         skillMemory();
         System.out.println(Arrays.toString(skillLocks));
         attackMultiplier=1;
         defense=0;
+
+        //if you complete levels you gain powerups
         if (userStats[0]){
             xyz = true;
         }
@@ -63,12 +68,12 @@ class Player {
 
 
     }
-    public int damage(String word) {
+    public int damage(String word) { //calculates the damage dealt
         int damage = 0;
         damage += word.length();
         damage *= attackMultiplier;
         boolean wordXYZCondition = false;
-        if(xyz){
+        if(xyz){ //if you have xyz treausure (deal extra damage if there is an x y or z in the word
             for(int i = 0; i < word.length();i++){
                 if (word.charAt(i) == 'x' ||word.charAt(i) == 'y' ||word.charAt(i) == 'z'){
                     damage = damage * 2;
@@ -76,25 +81,27 @@ class Player {
                 }
             }
             if(wordXYZCondition){
-                //nativeBattleLogs.add("This attack did twice the amount due to the XYZ treasure");
+                nativeBattleLogs.add("This attack did twice the amount due to the XYZ treasure");
                 wordXYZCondition = false;
             }
         }
-        if(sixup){
-            if(word.length() >= 6){
+        if(sixup){ //if you have the six up treasure (deal extra if your word is 6 letters or more
+            if(word.length() >= 5){
                 damage = (int) (damage * 1.5);
-                //nativeBattleLogs.add("This attack did 1.5 times the amount due to your Big Word treasure!");
+                nativeBattleLogs.add("This attack did 1.5 times the amount due to your Big Word treasure!");
             }
         }
         return damage;
     }
+    //getters and setters
     public int getHealth(){
         return health;
     }
     public void setHealth(int value){
         health = value;
     }
-    public void levelMemory() throws FileNotFoundException {
+
+    public void levelMemory() throws FileNotFoundException {//read text file to get level completion and availability
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
 
         String stats = inFile.nextLine();
@@ -118,6 +125,8 @@ class Player {
         }
         inFile.close();
     }
+
+    //getters and seters
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
     }
