@@ -13,6 +13,7 @@ class LevelSelect extends JFrame {
     private boolean [] lockStats = new boolean[4];
     private boolean writeName = false;
     private String username;
+    private Font fantasy;
     public LevelSelect() throws IOException {
         super("Bookworm Adventures");
         setSize(1280, 820);
@@ -21,6 +22,14 @@ class LevelSelect extends JFrame {
         if(writeName){
             writeUsername(username);
         }
+        try{
+            InputStream myStream = new BufferedInputStream(new FileInputStream("Fonts/RINGM___.TTF"));
+            fantasy = Font.createFont(Font.TRUETYPE_FONT, myStream).deriveFont(30f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/RINGM___.TTF")));
+        }
+        catch (FontFormatException e) {
+            e.printStackTrace();}
         System.out.println(Arrays.toString(userStats));
         System.out.println(Arrays.toString(lockStats));
         ImageIcon backPic = new ImageIcon("Pictures/Backgrounds/LevelSelectBack.png");
@@ -36,7 +45,7 @@ class LevelSelect extends JFrame {
         JLabel levelOneLabel = new JLabel();
         levelOneLabel.setText("1");
         levelOneLabel.setBounds(310,155,25,50);
-        levelOneLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelOneLabel.setFont(fantasy);
         levelOneLabel.setForeground(Color.BLACK);
         layeredPane.add(levelOneLabel, Integer.valueOf(3));
         System.out.println(levelOneLabel.getText());
@@ -66,7 +75,7 @@ class LevelSelect extends JFrame {
         JLabel levelTwoLabel = new JLabel();
         levelTwoLabel.setText("2");
         levelTwoLabel.setBounds(660,155,25,50);
-        levelTwoLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelTwoLabel.setFont(fantasy);
         levelTwoLabel.setForeground(Color.BLACK);
         layeredPane.add(levelTwoLabel,Integer.valueOf(3));
         if(!lockStats[1]){
@@ -95,7 +104,7 @@ class LevelSelect extends JFrame {
         JLabel levelThreeLabel = new JLabel();
         levelThreeLabel.setText("3");
         levelThreeLabel.setBounds(310,450,25,50);
-        levelThreeLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelThreeLabel.setFont(fantasy);
         levelThreeLabel.setForeground(Color.BLACK);
         layeredPane.add(levelThreeLabel,Integer.valueOf(3));
         if(!lockStats[2]){
@@ -123,7 +132,7 @@ class LevelSelect extends JFrame {
         JLabel levelFourLabel = new JLabel();
         levelFourLabel.setText("4");
         levelFourLabel.setBounds(660,450,25,50);
-        levelFourLabel.setFont(new Font("Times New Roman",Font.BOLD,30));
+        levelFourLabel.setFont(fantasy);
         levelFourLabel.setForeground(Color.BLACK);
         layeredPane.add(levelFourLabel,Integer.valueOf(3));
         if(!lockStats[3]){
@@ -154,6 +163,12 @@ class LevelSelect extends JFrame {
         ImageIcon newBtnPic = new ImageIcon("Pictures/A.png");
         JButton newBtn = new JButton(newBtnPic);
         newBtn.setBorder(new LineBorder(Color.BLACK));
+        JLabel newLabel = new JLabel();
+        newLabel.setText("reset");
+        newLabel.setBounds(1010,650,100,100);
+        newLabel.setFont(fantasy);
+        newLabel.setForeground(Color.BLACK);
+        layeredPane.add(newLabel,Integer.valueOf(3));
         newBtn.setActionCommand("new");
         newBtn.addActionListener(new LevelSelect.loadLevel());
         newBtn.setBounds(1000,650,100,100);
