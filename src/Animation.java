@@ -7,22 +7,18 @@ import java.util.List;
 public class Animation {
     private int currentFrame;               // animations current frame
     private int val,val2;                   //controls change in current frame //val1 for looping//val2 for playing once
-    private int totalFrames;                // total amount of frames for your animation
     private int posX,posY;                  //position of sprite
     private int posX2,posY2;                //position for atk sprites
     private int OGposX2;                    //original atk sprite location
     private List<BufferedImage> frames = new ArrayList<BufferedImage>();    // Arraylist of frames
 
     public Animation(ArrayList<BufferedImage> frames) {
-        for (int i = 0; i < frames.size(); i++) {
-            this.frames.add(frames.get(i));
-        }
+        this.frames.addAll(frames);
         posX=1200-frames.get(currentFrame).getWidth();
         posY=250-frames.get(currentFrame).getHeight();
         this.currentFrame = 0;
         this.val=-1;
         this.val2=1;
-        this.totalFrames = this.frames.size();
     }
     public void setPos(int x, int y){//for atkAnimations
         posX2=OGposX2=x;
@@ -51,7 +47,7 @@ public class Animation {
         }
         currentFrame+=val;
     }
-    public void playOnce(){
+    public void playOnce(){//changes current frame until it reaches last frame
         if (currentFrame==frames.size()-1){
             val2=0;
         }
@@ -59,6 +55,7 @@ public class Animation {
             currentFrame += val2;
         }
     }
+    //getters
     public int getPosX2() { return posX2; }
     public int getPosY2() { return posY2; }
     public BufferedImage getSprite() { return frames.get(currentFrame); }

@@ -24,8 +24,16 @@ public class SoundEffect {
             clip.start();
 
      }
+    public void stop(){
+        clip.stop();
+    }
+    public void closeSound(){ clip.close(); }
+
     public void setVolume(float volume) {
         FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         gainControl.setValue(20f * (float) Math.log10(volume));
+    }
+    public boolean isPlaying(){
+        return clip.isActive();
     }
 }

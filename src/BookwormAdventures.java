@@ -68,7 +68,7 @@ public class BookwormAdventures extends JFrame {
 
 }
 //this is the graphics class and where all the features in the game are located
-class GamePanel extends JPanel implements KeyListener {
+class GamePanel extends JPanel{
     public boolean ready=false;
     private int level; //current level
     private Level newLevel; //creates a new level
@@ -84,7 +84,7 @@ class GamePanel extends JPanel implements KeyListener {
     private ArrayList<String> chosenWords = new ArrayList<String>(); //the words that you have selected for that battle
     private Rectangle resetButton,submitButton,healthBar,healthBar2,nextButton,backButton,exitButton,powerUp1,powerUp2,powerUp3,enemyBuff; //many rectangles (usually for buttons)
     private String selectedWord = ""; //the current word that the user is making
-    private String currentMusic;//music that is playing right now
+    private SoundEffect currentMusic;//music that is playing right now
     private static Image WoodBack, ResetBtnPic, SubmitBtnPic,WoodSign,BackBtn,ExitBtnPic,NextBtn,pixelHeart,gains,xyzPic,fireBall,breeze,iceCube,droplet,lostSign,exitSign,exitBtn,finishSign;
     private int BackVal;
     private boolean moveBack,winCondition,exitCondition,loseCondition;
@@ -97,8 +97,7 @@ class GamePanel extends JPanel implements KeyListener {
     private boolean[] userStats = new boolean[4]; //list to check for level completion
     private boolean [] lockStats = new boolean [4]; //list to check for if that level has been unlocked
     private Font fantasy; //custom font
-    private Sound backgroundMusic,bossSound; //music files
-    private SoundEffect hurtSound,playerHurtSound,applause,thunderSound,sliceSound;//sfx for attacks
+    private SoundEffect hurtSound,playerHurtSound,applause,thunderSound,sliceSound,world1theme,world2theme,world3theme,world4theme,bossSound;//sfx for attacks and music
     public GamePanel(int value,String username,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
@@ -134,7 +133,7 @@ class GamePanel extends JPanel implements KeyListener {
         powerUp3 = new Rectangle(150,60,50,50);
         enemyBuff = new Rectangle(1050,75,50,50);
         stage=0;
-        currentMusic = "backgroundMusic";
+
         deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",9);
         deathAnimation = new Animation(deathSpriteList.getList());
         atkSpriteLst1 = new SpriteList("Pictures/Enemies/Attack Animation", 5);
@@ -146,16 +145,24 @@ class GamePanel extends JPanel implements KeyListener {
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
         }
-        bossSound = new Sound("Music/bossBattle.wav",50);
-        backgroundMusic = new Sound("Music/backgroundMusic.wav",50);
+        bossSound = new SoundEffect("Music/bossBattle.wav");
+        bossSound.setVolume((float)0.3);
+        world1theme = new SoundEffect("Music/world1theme.wav");
+        world2theme = new SoundEffect("Music/world2theme.wav");
+        world3theme = new SoundEffect("Music/world3theme.wav");
+        world4theme = new SoundEffect("Music/world4theme.wav");
+        world1theme.setVolume((float)0.1);
+        world2theme.setVolume((float)0.1);
+        world3theme.setVolume((float)0.1);
+        world4theme.setVolume((float)0.1);
         hurtSound = new SoundEffect("Music/hurtSound.wav");
-        hurtSound.setVolume((float) 0.05);
+        hurtSound.setVolume((float) 0.5);
         playerHurtSound = new SoundEffect("Music/playerHurtSound.wav");
-        playerHurtSound.setVolume((float)0.5);
+        playerHurtSound.setVolume((float)0.7);
         applause = new SoundEffect("Music/applause.wav");
         applause.setVolume((float)0.5);
         thunderSound = new SoundEffect("Music/thunderSound.wav");
-        thunderSound.setVolume((float)0.2);
+        thunderSound.setVolume((float)0.3);
         sliceSound = new SoundEffect("Music/sliceSound.wav");
         sliceSound.setVolume((float)0.5);
         alphabet = letters.randomXletters(16);
@@ -196,15 +203,19 @@ class GamePanel extends JPanel implements KeyListener {
         switch (level){
             case 1:
                 battleLogs.add("You are in the Fire World");
+                currentMusic=world1theme;
                 break;
             case 2:
                 battleLogs.add("You are in the Ice World");
+                currentMusic=world2theme;
                 break;
             case 3:
                 battleLogs.add("You are in the Sky World");
+                currentMusic=world3theme;
                 break;
             case 4:
                 battleLogs.add("You are in the Water World");
+                currentMusic=world4theme;
                 break;
         }
         animationPlaying=true;
@@ -216,16 +227,15 @@ class GamePanel extends JPanel implements KeyListener {
 
         BackVal=0;
         moveBack=false;
-        System.out.println(enemiesQueue);
         currentEnemy = enemiesQueue.get(enemyCounter);
         this.frame = frame;
-        backgroundMusic.play();
+        currentMusic.play();
     }
     public void setLevel(int value){ //setter method for the level
         level = value;
     }
 
-    public void update(){
+    public void update(){//update images for animation
         if(animationPlaying) {
             currentEnemy.getAnimation().update();
             player.getAnimation().update();
@@ -246,7 +256,7 @@ class GamePanel extends JPanel implements KeyListener {
 
         }
         if(enemyAttacking){
-            currentEnemy.getAtkAnimation().moveLeft();
+            currentEnemy.getAtkAnimation().moveLeft();//projectile motion
             if (currentEnemy.getAtkAnimation().getPosX2()<110){
                 playerHurtSound.play();
                 enemyAttacking=false;
@@ -277,15 +287,8 @@ class GamePanel extends JPanel implements KeyListener {
         my = 0;
     }
     public void checkMusic(){ //if the music stops, the music will continue playing
-        if(currentMusic.equals("backgroundMusic")){
-            if (!backgroundMusic.isPlaying()){
-                backgroundMusic.play();
-            }
-        }
-        else{
-            if(!bossSound.isPlaying()){
-                bossSound.play();
-            }
+        if(!currentMusic.isPlaying()){
+            currentMusic.play();
         }
     }
     public void slotReplace(){ //replacing the letters that you used to make the word
@@ -333,9 +336,9 @@ class GamePanel extends JPanel implements KeyListener {
         if (enemyCounter < enemiesQueue.size()) {//if there are still enemies left in the line
             currentEnemy = enemiesQueue.get(enemyCounter);//set current enemy to next one
             if(enemyCounter == enemiesQueue.size()-1){ //if last enemy of the level, play boss music
-                backgroundMusic.stop();
+                currentMusic.stop();
                 bossSound.play();
-                currentMusic = "bossSound";
+                currentMusic = bossSound;
             }
             moveBack = true;
             if (player.getHealth() + 25 > player.getMaxHealth()) { //when you win a battle, gain 25 health
@@ -400,7 +403,6 @@ class GamePanel extends JPanel implements KeyListener {
                 damage = player.damage(word);
             }
             currentEnemy.setHealth(currentEnemy.getHealth() - damage); //take that health away from the enemy
-//            hurtSound.play();
             if(currentEnemy.getWorldBuff().equals("Sky Buff")){ //sky world buff (deal that damage back to you)
                 int chance = randint(0,6); //14% chance
                 if (chance == 5){
@@ -437,8 +439,9 @@ class GamePanel extends JPanel implements KeyListener {
                     editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you");
                     if(player.isSpikeArmor()){
                         currentEnemy.setHealth(currentEnemy.getHealth()-1);
+                        editBattleLogs("The enemy is hurt by your fashionable spike armor");
                     }
-                    editBattleLogs("The enemy is hurt by your fashionable spike armor");
+
                     if(currentEnemy.getHealth()<=0) {
                         kill();
                     }
@@ -469,14 +472,13 @@ class GamePanel extends JPanel implements KeyListener {
             player.heal();
             editBattleLogs("You have been healed for 4 hp");
         }
-//
     }
 
     public void addNotify() {
         super.addNotify();
         ready = true;
     }
-    public void sPointAdd() throws IOException {
+    public void sPointAdd() throws IOException {//adding skill points at the end of a level to txt file
         Scanner file = new Scanner(new BufferedReader(new FileReader("Text Files/skillMemory.txt")));
         String s = file.nextLine();
         int n = file.nextInt();
@@ -486,12 +488,7 @@ class GamePanel extends JPanel implements KeyListener {
         newFile.print(n+1);
         newFile.close();
     }
-
-    public Animation getAnimation(){
-        return currentEnemy.getAnimation();
-    }
-
-    public void moveBack(){
+    public void moveBack(){//moving background
         if (moveBack) {
             BackVal -= 30;
             if(BackVal<=-1280){
@@ -500,10 +497,8 @@ class GamePanel extends JPanel implements KeyListener {
                 stage++;
                 deathAnimationPlaying=false;
                 deathAnimation.reset();
-
             }
         }
-
     }
     public void readLevelMemory() throws FileNotFoundException { //method that reads for level completion
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
@@ -653,6 +648,7 @@ class GamePanel extends JPanel implements KeyListener {
         g.setColor(Color.WHITE);
         g.drawString(Integer.toString(player.getHealth()),healthBar.width/2 +healthBar.x,47);
 
+        //animations
         if(deathAnimationPlaying) {
             g.drawImage(deathAnimation.getSprite(), deathAnimation.getSpritePosX(), deathAnimation.getSpritePosY(), null);
         }
@@ -668,7 +664,11 @@ class GamePanel extends JPanel implements KeyListener {
         if(enemyAttacking){
             g.drawImage(currentEnemy.getAtkAnimation().getSprite(),currentEnemy.getAtkAnimation().getPosX2(),currentEnemy.getAtkAnimation().getPosY2(),null);
         }
-
+        //idle animation
+        if (!moveBack && !winCondition) {
+            g.drawImage(currentEnemy.getAnimation().getSprite(), currentEnemy.getAnimation().getSpritePosX(),
+                    currentEnemy.getAnimation().getSpritePosY(), null);
+        }
 
         //draw the enemy's name and health
         if(currentEnemy!=null) {
@@ -780,10 +780,6 @@ class GamePanel extends JPanel implements KeyListener {
         }
 
 
-        if (!moveBack && !winCondition) {
-            g.drawImage(currentEnemy.getAnimation().getSprite(), currentEnemy.getAnimation().getSpritePosX(),
-                    currentEnemy.getAnimation().getSpritePosY(), null);
-        }
 
         //drawing players powerups
         if (player.getXYZ()){
@@ -824,8 +820,16 @@ class GamePanel extends JPanel implements KeyListener {
                 if (backButton.contains(mx, my)) { //if you press back
                     try {
                         changeLevelMemory();
-                        backgroundMusic.closeSound();
+                        world1theme.closeSound();
+                        world2theme.closeSound();
+                        world3theme.closeSound();
+                        world4theme.closeSound();
                         bossSound.closeSound();
+                        hurtSound.closeSound();
+                        thunderSound.closeSound();
+                        sliceSound.closeSound();
+                        applause.closeSound();
+                        playerHurtSound.closeSound();
                         LevelSelect backTo = new LevelSelect();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -835,8 +839,16 @@ class GamePanel extends JPanel implements KeyListener {
                 if (nextButton.contains(mx, my)) { //if you press next
                     try {
                         changeLevelMemory();
-                        backgroundMusic.closeSound();
+                        world1theme.closeSound();
+                        world2theme.closeSound();
+                        world3theme.closeSound();
+                        world4theme.closeSound();
                         bossSound.closeSound();
+                        hurtSound.closeSound();
+                        thunderSound.closeSound();
+                        sliceSound.closeSound();
+                        applause.closeSound();
+                        playerHurtSound.closeSound();
                         BookwormAdventures nextLevel = new BookwormAdventures(level + 1);
                         frame.setVisible(false);
                     } catch (IOException e) {
@@ -879,7 +891,7 @@ class GamePanel extends JPanel implements KeyListener {
             }
             if(nextButton.contains(mx,my)){
                 try {
-                    backgroundMusic.closeSound();
+                    currentMusic.closeSound();
                     bossSound.closeSound();
                     LevelSelect backTo = new LevelSelect();
 
@@ -922,7 +934,7 @@ class GamePanel extends JPanel implements KeyListener {
             if (backButton.contains(mx,my)){
                 try {
                     LevelSelect levelSelect = new LevelSelect();
-                    backgroundMusic.closeSound();
+                    currentMusic.closeSound();
                     bossSound.closeSound();
                     frame.setVisible(false);
                 } catch (IOException e) {
@@ -949,7 +961,6 @@ class GamePanel extends JPanel implements KeyListener {
         if(enemyBuff.contains(p.x,p.y)) {
             g.setColor(Color.black);
             g.setFont(fantasy);
-            System.out.println(currentEnemy.getWorldBuff());
             if(currentEnemy.getWorldBuff().equals("Fire Buff")) {
                 g.drawString("The enemies burn you and deal 5 extra damage per round", 600, 100);
             }
@@ -965,36 +976,15 @@ class GamePanel extends JPanel implements KeyListener {
         }
     }
 
-
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-    }
-
-    @Override
-
-    public void keyReleased(KeyEvent e) {
-    }
-
     class clickListener implements MouseListener {
         // ------------ MouseListener ------------------------------------------
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
-        public void mouseClicked(MouseEvent e){
-//            System.out.println(player.getAttackMultiplier());
-
-        }
-
+        public void mouseClicked(MouseEvent e){}
         public void mousePressed(MouseEvent e){
             mx = e.getX();
             my = e.getY();
-
         }
     }
-
 }

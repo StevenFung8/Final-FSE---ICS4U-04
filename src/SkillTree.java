@@ -1,4 +1,6 @@
-import com.sun.jdi.IntegerValue;
+//SkillTree.java
+//Dylan Tan & Steven Fung
+//Class with own JFrame that contains all skills that are unlockable with skill points.
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -17,13 +19,13 @@ import javax.swing.JPopupMenu;
 class SkillTree extends JFrame {
 
     private JLayeredPane skillPane;
-    private ImageIcon skillTree, backBtnPic;
-    private JButton SBtn1, SBtn2, SBtn3, SBtn4, SBtn5, SBtn6, SBtn7;
+    private ImageIcon skillTree, backBtnPic;//background and backbtn picture
+    private JButton SBtn1, SBtn2, SBtn3, SBtn4, SBtn5, SBtn6, SBtn7;//btn for each skill
     private Skill Skill1, Skill2, Skill3,Skill4,Skill5,Skill6,Skill7;
-    private Boolean[] skillLocks;
-    private int sPoints;
+    private Boolean[] skillLocks;//keep track of skills locked and unlocked
+    private int sPoints;//skill points available
     private JLabel skillPoints;
-    private JButton[] buttons = new JButton[7];
+    private JButton[] buttons = new JButton[7];//button list
 
 
     public SkillTree() throws IOException {
@@ -44,7 +46,7 @@ class SkillTree extends JFrame {
         Skill7 = new Skill("7",900,162,"spikeArmor");
 
 
-        JPopupMenu popup1 = new JPopupMenu("AttackBoost");
+        JPopupMenu popup1 = new JPopupMenu("AttackBoost");//Popup menu put onto btn carrying description of the skill
         JMenuItem description1 = new JMenuItem("Attacks do 3 more damage");
         popup1.add(description1);
         SBtn1 = new JButton(Skill1.getIcon());
@@ -55,7 +57,7 @@ class SkillTree extends JFrame {
         SBtn1.setComponentPopupMenu(popup1);
         skillPane.add(SBtn1,Integer.valueOf(2));
 
-        JPopupMenu popup2 = new JPopupMenu("defenseBoost");
+        JPopupMenu popup2 = new JPopupMenu("defenseBoost");//Popup menu put onto btn carrying description of the skill
         JMenuItem description2 = new JMenuItem("You take 1 less damage");
         popup2.add(description2);
         SBtn2 = new JButton(Skill2.getIcon());
@@ -66,7 +68,7 @@ class SkillTree extends JFrame {
         SBtn2.setComponentPopupMenu(popup2);
         skillPane.add(SBtn2,Integer.valueOf(2));
 
-        JPopupMenu popup3 = new JPopupMenu("healthBoost");
+        JPopupMenu popup3 = new JPopupMenu("healthBoost");//Popup menu put onto btn carrying description of the skill
         JMenuItem description3 = new JMenuItem("Health increased by 25%");
         popup3.add(description3);
         SBtn3 = new JButton(Skill3.getIcon());
@@ -77,7 +79,7 @@ class SkillTree extends JFrame {
         SBtn3.setComponentPopupMenu(popup3);
         skillPane.add(SBtn3,Integer.valueOf(2));
 
-        JPopupMenu popup4 = new JPopupMenu("bleed");
+        JPopupMenu popup4 = new JPopupMenu("bleed");//Popup menu put onto btn carrying description of the skill
         JMenuItem description4 = new JMenuItem("20% chance to strike an artery and make opponent bleed");
         popup4.add(description4);
         SBtn4 = new JButton(Skill4.getIcon());
@@ -88,7 +90,7 @@ class SkillTree extends JFrame {
         SBtn4.addMouseListener(new ClickStart(skillPane,skillLocks));
         skillPane.add(SBtn4,Integer.valueOf(2));
 
-        JPopupMenu popup5 = new JPopupMenu("Critical");
+        JPopupMenu popup5 = new JPopupMenu("Critical");//Popup menu put onto btn carrying description of the skill
         JMenuItem description5 = new JMenuItem("10% chance to deal an attack that does 2x the damage");
         popup5.add(description5);
         SBtn5 = new JButton(Skill5.getIcon());
@@ -99,7 +101,7 @@ class SkillTree extends JFrame {
         SBtn5.addMouseListener(new ClickStart(skillPane,skillLocks));
         skillPane.add(SBtn5,Integer.valueOf(2));
 
-        JPopupMenu popup6 = new JPopupMenu("heal");
+        JPopupMenu popup6 = new JPopupMenu("heal");//Popup menu put onto btn carrying description of the skill
         JMenuItem description6 = new JMenuItem("Heal 4 hp per round");
         popup6.add(description6);
         SBtn6 = new JButton(Skill6.getIcon());
@@ -110,7 +112,7 @@ class SkillTree extends JFrame {
         SBtn6.addMouseListener(new ClickStart(skillPane,skillLocks));
         skillPane.add(SBtn6,Integer.valueOf(2));
 
-        JPopupMenu popup7 = new JPopupMenu("spikeShield");
+        JPopupMenu popup7 = new JPopupMenu("spikeShield");//Popup menu put onto btn carrying description of the skill
         JMenuItem description7 = new JMenuItem("Whenever you're attacked the enemy will sustain a bit of damage");
         popup7.add(description7);
         SBtn7 = new JButton(Skill7.getIcon());
@@ -121,7 +123,7 @@ class SkillTree extends JFrame {
         SBtn7.addMouseListener(new ClickStart(skillPane,skillLocks));
         skillPane.add(SBtn7,Integer.valueOf(2));
 
-        buttons[0]=SBtn1;
+        buttons[0]=SBtn1;//adding buttons to list so can be accessed later
         buttons[1]=SBtn2;
         buttons[2]=SBtn3;
         buttons[3]=SBtn4;
@@ -141,29 +143,23 @@ class SkillTree extends JFrame {
         skillPane.add(backBtn,Integer.valueOf(2));
         skillMemory();
         skillPointsDisplay();
-        for(int i=0 ; i<7; i++){
+
+        //if skill unlocked then border will turn blue
+        for(int i=0 ; i<7; i++){//
             if (skillLocks[i]){
                 buttons[i].setBorder(new LineBorder(Color.BLUE,5));
             }
         }
-        System.out.println(Arrays.toString(skillLocks));
-
-
-
-
-
         setContentPane(skillPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setResizable(false);
     }
 
-    public void skillMemory() throws IOException {
+    public void skillMemory() throws IOException {//reads txt file and updates skillLocks array, and sPoints
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/skillMemory.txt")));
-
         String stats = inFile.nextLine();
         String [] skillStats = stats.split(",");
-        System.out.println(Arrays.toString(skillStats));
         for(int i = 0; i<skillStats.length; i++){
             skillLocks[i] = skillStats[i].equals("UNLOCKED");
         }
@@ -171,8 +167,7 @@ class SkillTree extends JFrame {
 
         inFile.close();
     }
-    public void skillPointsDisplay() throws FileNotFoundException {
-
+    public void skillPointsDisplay() throws FileNotFoundException {//displays available skill points on the side
         String SP = "";
         try {
             FileReader readFile = new FileReader("Text Files/skillMemory.txt");
@@ -182,19 +177,17 @@ class SkillTree extends JFrame {
         }catch (IOException e){
             e.printStackTrace();
         }
-
         skillPoints.setText(SP + " SP");
         skillPoints.setBounds(50,400,100,60);
         skillPoints.setFont(new Font("Times New Roman",Font.BOLD,50));
         skillPoints.setForeground(Color.BLACK);
-
-
     }
 
-    public void changeSkillMemory(int n) throws IOException{
+    public void changeSkillMemory(int n) throws IOException{//updating skill memory text file after unlocking new skill
         PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/skillMemory.txt")));
         skillLocks[n]=true;
         buttons[n].setBorder(new LineBorder(Color.BLUE,5));
+        //rewriting file
         for (int i = 0; i<6; i++){
             String s = skillLocks[i].toString();
             if (s.equals("false")){
@@ -214,8 +207,6 @@ class SkillTree extends JFrame {
         file.println("");
         file.print(sPoints);
         file.close();
-
-
     }
     public static void main(String[] arguments) {
     }
@@ -223,8 +214,8 @@ class SkillTree extends JFrame {
 
         private JLabel text1,text2,skillBack;
         private ImageIcon textPic1,textPic2;
-        private JLayeredPane skillPane;
-        private Boolean[] skillLocks;
+        private JLayeredPane skillPane;//same as SkillTree.java
+        private Boolean[] skillLocks;//same as SkillTree.java
 
         public ClickStart(JLayeredPane jLayeredPane, Boolean[] locks){
             skillLocks = locks;
@@ -258,8 +249,8 @@ class SkillTree extends JFrame {
                     setVisible(false);
                     break;
                 case "attackBoost" :
-                    if(!skillLocks[0]) {
-                        if (sPoints > 0) {
+                    if(!skillLocks[0]) {//check if not already unlocked
+                        if (sPoints > 0) {//check if you have enough sPoints
                             try {
                                 changeSkillMemory(0);
                                 skillPointsDisplay();
@@ -267,8 +258,7 @@ class SkillTree extends JFrame {
                                 e.printStackTrace();
                             }
 
-                        } else {
-                            skillPane.add(skillBack, Integer.valueOf(1));
+                        } else {//displays that you lack skill points
                             skillPane.add(text1, Integer.valueOf(3));
                         }
                     }
@@ -282,19 +272,19 @@ class SkillTree extends JFrame {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        } else if (sPoints == 0) {
+                        } else if (sPoints == 0) {//lackSkillpoints
 
                             skillPane.add(text1, Integer.valueOf(3));
                         } else if (!skillLocks[0]) {
 
-                            skillPane.add(text2, Integer.valueOf(3));
+                            skillPane.add(text2, Integer.valueOf(3));//haven't unlocked previous skill
                         } else {
 
-                            skillPane.add(text1, Integer.valueOf(3));
+                            skillPane.add(text1, Integer.valueOf(3));//both
                             skillPane.add(text2, Integer.valueOf(3));
                         }
                     }
-                    System.out.println(Arrays.toString(skillLocks));
+
                     break;
                 case "healthBoost":
                     if(!skillLocks[2]) {
@@ -315,7 +305,7 @@ class SkillTree extends JFrame {
                             skillPane.add(text2, Integer.valueOf(3));
                         }
                     }
-                    System.out.println(Arrays.toString(skillLocks));
+
                     break;
                 case "bleed":
                     if(!skillLocks[3]) {
@@ -338,7 +328,7 @@ class SkillTree extends JFrame {
                             skillPane.add(text2, Integer.valueOf(3));
                         }
                     }
-                    System.out.println(Arrays.toString(skillLocks));
+
                     break;
                 case "critical":
                     if(!skillLocks[4]) {
@@ -361,7 +351,7 @@ class SkillTree extends JFrame {
                             skillPane.add(text2, Integer.valueOf(3));
                         }
                     }
-                    System.out.println(Arrays.toString(skillLocks));
+
                     break;
                 case "heal":
                     if(!skillLocks[5]) {
@@ -384,7 +374,7 @@ class SkillTree extends JFrame {
                             skillPane.add(text2, Integer.valueOf(3));
                         }
                     }
-                    System.out.println(Arrays.toString(skillLocks));
+
                     break;
 
                 case "spikeArmor":
@@ -408,7 +398,7 @@ class SkillTree extends JFrame {
                             skillPane.add(text2, Integer.valueOf(3));
                         }
                     }
-                    System.out.println(Arrays.toString(skillLocks));
+
                     break;
             }
         }

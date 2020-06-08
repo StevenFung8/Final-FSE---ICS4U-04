@@ -300,7 +300,7 @@ class LevelSelect extends JFrame {
         file.print("LOCKED");
         file.close();
     }
-    public void clearSkillMemory() throws IOException {
+    public void clearSkillMemory() throws IOException {//resets skill tree
         PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/skillMemory.txt")));
         for (int i = 0; i<6;i++){
             file.print("LOCKED,");

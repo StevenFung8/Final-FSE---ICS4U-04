@@ -15,12 +15,13 @@ import java.io.IOException;
 public class StartMenu extends JFrame implements ActionListener{
     private JLayeredPane layeredPane=new JLayeredPane();
     private JLayeredPane creditsPane=new JLayeredPane();
-    private Sound titleMusic;
+    private SoundEffect titleMusic;
 
     public StartMenu() throws IOException {
         super("Bookworm Adventures");
         setSize(1280,820);
-        titleMusic = new Sound("Music/titleScreen.wav",50);
+        titleMusic = new SoundEffect("Music/titleScreen.wav");
+        titleMusic.setVolume((float)0.2);
         titleMusic.play();
         Image icon = ImageIO.read(new File("Pictures/StartMenu/bookwormIcon.png"));
         setIconImage(icon);

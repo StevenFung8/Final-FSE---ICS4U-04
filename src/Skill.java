@@ -1,3 +1,6 @@
+//Skill.java
+//Dylan Tan & Steven Fung
+//holds information for skills used in skillTree
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -12,25 +15,13 @@ public class Skill {
 
 
     public Skill(String pathNumber,int x, int y, String ability){
-        icon = new ImageIcon("Pictures/SkillTree/Skill" + pathNumber + ".png");
+        icon = new ImageIcon("Pictures/SkillTree/Skill" + pathNumber + ".png");//all similar directory
         locked=true;
         rect= new Rectangle(x,y,115,115);
         this.ability = ability;
     }
-
-    public ImageIcon getIcon() {
-        return icon;
-    }
-
-    public Boolean getLocked() {
-        return locked;
-    }
-
-    public Rectangle getRect() {
-        return rect;
-    }
-
-    public String getAbility() {
-        return ability;
-    }
+    //getter setters
+    public ImageIcon getIcon() { return icon; }
+    public Rectangle getRect() { return rect; }
+    public String getAbility() { return ability; }
 }

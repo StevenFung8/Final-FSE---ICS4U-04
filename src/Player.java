@@ -11,14 +11,13 @@ import java.util.Scanner;
 //Dylan Tan and Steven Fung
 //This is the object class for all the players stats
 class Player {
-    private int health,score,maxHealth,attackMultiplier,defense;
+    private int health,maxHealth,attackMultiplier,defense;
     private String username;
     private boolean sixup,healthup,xyz,arteryAttack,criticalAttack,healing,spikeArmor;//powerups
     private ArrayList<String> nativeBattleLogs = new ArrayList<>();
-    private SpriteList spriteList;
     private Animation animation;
-    private boolean [] userStats = new boolean[4];
-    private boolean[] skillLocks = new boolean[7];
+    private boolean [] userStats = new boolean[4];//powerups unlocked
+    private boolean[] skillLocks = new boolean[7];//skills unlocked
 
     public Player(String a,int h) throws IOException { //constructor to set base stats
         username = a;
@@ -28,13 +27,11 @@ class Player {
         arteryAttack=false;
         healing=false;
         spikeArmor=false;
-        spriteList=new SpriteList("Pictures/Player",3);
+        SpriteList spriteList=new SpriteList("Pictures/Player",3);
         animation= new Animation(spriteList.getList());
         criticalAttack=false;
-
         levelMemory();
         skillMemory();
-        System.out.println(Arrays.toString(skillLocks));
         attackMultiplier=1;
         defense=0;
 
@@ -56,59 +53,34 @@ class Player {
             health = h;
             maxHealth = h;
         }
-
-        if(skillLocks[1]){
+        if(skillLocks[1]){//defense boost
             defense=1;
-
         }
 
         if(skillLocks[2]){
             maxHealth*=1.25;
             health*=1.25;
         }
-        if(skillLocks[5]){
+        if(skillLocks[5]){//healing effect
             healing=true;
         }
-        if(skillLocks[6]){
+        if(skillLocks[6]){//spiky armor
             spikeArmor=true;
         }
-
-
-
     }
 
-    public boolean isSpikeArmor() {
-        return spikeArmor;
-    }
-
-    public boolean isHealing() {
-        return healing;
-    }
-    public void heal(){
+    public void heal(){//heals player every round
         if(health<maxHealth){
             health+=1;
         }
     }
-
-    public boolean[] getSkillLocks(){
-        return skillLocks;
-    }
-
-    public boolean isArteryAttack() {
-        return arteryAttack;
-    }
-    public boolean isCritical(){
-        return criticalAttack;
-    }
-
-    public void resetCritical(){
+    public void resetCritical(){//resetting critical boolean
         criticalAttack=false;
     }
 
-
     public int damage(String word) { //calculates the damage dealt
         int damage = 0;
-        damage += word.length();
+        damage += word.length();//plus 1 damage per person
         if(skillLocks[0]){
             damage +=3;
         }
@@ -120,10 +92,10 @@ class Player {
             criticalAttack=true;
 
         }
-        if(skillLocks[3]){
+        if(skillLocks[3]){//bleed chance
             int j = randint(1,5);
             if(j==1){
-                arteryAttack=true;
+                arteryAttack=true;//enemy now bleeding and will lose health every turn
             }
         }
 
@@ -140,7 +112,7 @@ class Player {
                 wordXYZCondition = false;
             }
         }
-        if(sixup){ //if you have the six up treasure (deal extra if your word is 6 letters or more
+        if(sixup){ //if you have the six up treasure (deal extra if your word is 6 letters or more)
             if(word.length() >= 5){
                 damage = (int) (damage * 1.5);
                 nativeBattleLogs.add("Your Big Word treasure was activated");
@@ -148,13 +120,7 @@ class Player {
         }
         return damage;
     }
-    //getters and setters
-    public int getHealth(){
-        return health;
-    }
-    public void setHealth(int value){
-        health = value;
-    }
+
 
     public void levelMemory() throws FileNotFoundException {//read text file to get level completion and availability
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/levelMemory.txt")));
@@ -169,47 +135,36 @@ class Player {
         String name = inFile.nextLine();
         username = name;
     }
-    public void skillMemory() throws IOException{
+    public void skillMemory() throws IOException{//read txt file that contains status of skills
         Scanner inFile = new Scanner(new BufferedReader(new FileReader("Text Files/skillMemory.txt")));
-
         String stats = inFile.nextLine();
         String [] skillStats = stats.split(",");
         System.out.println(Arrays.toString(skillStats));
-        for(int i = 0; i<skillStats.length; i++){
+        for(int i = 0; i<skillStats.length; i++){//adding to boolean array
             skillLocks[i] = skillStats[i].equals("UNLOCKED");
         }
         inFile.close();
     }
-
-    //getters and seters
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
     }
-    public ArrayList<String> getNativeBattleLogs(){
-        return nativeBattleLogs;
-    }
-    public int getMaxHealth(){
-        return maxHealth;
-    }
-    public boolean getXYZ(){
-        return xyz;
-    }
-    public boolean getSixUp(){
-        return sixup;
-    }
-    public boolean getHealthUp(){
-        return healthup;
-    }
-    public Animation getAnimation() {
-        return animation;
-    }
-    public int getDefense(){
-        return defense;
-    }
+    //getters and setters
+    public boolean[] getSkillLocks(){ return skillLocks; }
+    public boolean isArteryAttack() { return arteryAttack; }
+    public boolean isCritical(){ return criticalAttack; }
+    public boolean isSpikeArmor() { return spikeArmor; }
+    public boolean isHealing() { return healing; }
+    public int getHealth(){ return health; }
+    public void setHealth(int value){ health = value; }
+    public ArrayList<String> getNativeBattleLogs(){ return nativeBattleLogs; }
+    public int getMaxHealth(){ return maxHealth; }
+    public boolean getXYZ(){ return xyz; }
+    public boolean getSixUp(){ return sixup; }
+    public boolean getHealthUp(){ return healthup; }
+    public Animation getAnimation() { return animation; }
+    public int getDefense(){ return defense; }
     public String getUsername(){return username;}
-    public int getAttackMultiplier(){
-        return attackMultiplier;
-    }
+    public int getAttackMultiplier(){ return attackMultiplier; }
 }
 
 

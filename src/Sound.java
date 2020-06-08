@@ -56,7 +56,6 @@ public class Sound {
 
     public void closeSound(){
         clip.close();
-        madeSounds.remove(this); // Remove from tracked sounds
     }
 
     public boolean isPlaying(){

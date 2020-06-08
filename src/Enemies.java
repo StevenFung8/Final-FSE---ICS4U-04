@@ -16,12 +16,11 @@ class Enemies {
         name = s;
         health = h;
         maxHealth = h;
-        spriteList = new SpriteList(fPath,fSize);
-        atkSpriteList = new SpriteList(atkPath,atkSize);
+        SpriteList spriteList = new SpriteList(fPath, fSize);
+        SpriteList atkSpriteList = new SpriteList(atkPath, atkSize);
         animation = new Animation(spriteList.getList());
         atkAnimation = new Animation(atkSpriteList.getList());
-        atkAnimation.setPos(1100,100);
-
+        atkAnimation.setPos(1100,150-atkAnimation.getSprite().getHeight()/2);
         worldBuff = p;
         bleeding=false;
     }
@@ -47,21 +46,11 @@ class Enemies {
     public void setBleeding() {
         bleeding=true;
     }
-
-    public Boolean getBleeding() {
-        return bleeding;
-    }
-
-    public int getMaxHealth() {
-        return maxHealth;
-    }
-
-    public int bleed(){
+    public int bleed(){//if bleeding then will lose health from 1 - 3
             int x = randint(1,3);
             health-=x;
             return x;
     }
-
     public int randint(int low, int high){
         return (int)(Math.random()*(high-low+1)+low);
     }
@@ -79,7 +68,15 @@ class Enemies {
     public void setHealth(int value){
         health = value;
     }
-
+    public void setBleeding() {
+        bleeding=true;
+    }
+    public Boolean getBleeding() {
+        return bleeding;
+    }
+    public int getMaxHealth() {
+        return maxHealth;
+    }
     public String getName(){
         return name;
     }
