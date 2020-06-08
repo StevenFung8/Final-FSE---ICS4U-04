@@ -68,9 +68,7 @@ class Enemies {
     public void setHealth(int value){
         health = value;
     }
-    public void setBleeding() {
-        bleeding=true;
-    }
+
     public Boolean getBleeding() {
         return bleeding;
     }

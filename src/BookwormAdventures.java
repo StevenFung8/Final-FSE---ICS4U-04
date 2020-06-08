@@ -864,8 +864,16 @@ class GamePanel extends JPanel{
                     try {
                         changeLevelMemory();
                         LevelSelect backTo = new LevelSelect();
-                        backgroundMusic.closeSound();
+                        world1theme.closeSound();
+                        world2theme.closeSound();
+                        world3theme.closeSound();
+                        world4theme.closeSound();
                         bossSound.closeSound();
+                        hurtSound.closeSound();
+                        thunderSound.closeSound();
+                        sliceSound.closeSound();
+                        applause.closeSound();
+                        playerHurtSound.closeSound();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -891,8 +899,16 @@ class GamePanel extends JPanel{
             }
             if(nextButton.contains(mx,my)){
                 try {
-                    currentMusic.closeSound();
+                    world1theme.closeSound();
+                    world2theme.closeSound();
+                    world3theme.closeSound();
+                    world4theme.closeSound();
                     bossSound.closeSound();
+                    hurtSound.closeSound();
+                    thunderSound.closeSound();
+                    sliceSound.closeSound();
+                    applause.closeSound();
+                    playerHurtSound.closeSound();
                     LevelSelect backTo = new LevelSelect();
 
                 } catch (IOException e) {
@@ -934,8 +950,16 @@ class GamePanel extends JPanel{
             if (backButton.contains(mx,my)){
                 try {
                     LevelSelect levelSelect = new LevelSelect();
-                    currentMusic.closeSound();
+                    world1theme.closeSound();
+                    world2theme.closeSound();
+                    world3theme.closeSound();
+                    world4theme.closeSound();
                     bossSound.closeSound();
+                    hurtSound.closeSound();
+                    thunderSound.closeSound();
+                    sliceSound.closeSound();
+                    applause.closeSound();
+                    playerHurtSound.closeSound();
                     frame.setVisible(false);
                 } catch (IOException e) {
                     e.printStackTrace();
