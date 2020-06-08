@@ -45,7 +45,7 @@ class SkillTree extends JFrame {
 
 
         JPopupMenu popup1 = new JPopupMenu("AttackBoost");
-        JMenuItem description1 = new JMenuItem("Attacks do 5 more damage");
+        JMenuItem description1 = new JMenuItem("Attacks do 3 more damage");
         popup1.add(description1);
         SBtn1 = new JButton(Skill1.getIcon());
         SBtn1.setActionCommand(Skill1.getAbility());
@@ -67,7 +67,7 @@ class SkillTree extends JFrame {
         skillPane.add(SBtn2,Integer.valueOf(2));
 
         JPopupMenu popup3 = new JPopupMenu("healthBoost");
-        JMenuItem description3 = new JMenuItem("Health increased by 50%");
+        JMenuItem description3 = new JMenuItem("Health increased by 25%");
         popup3.add(description3);
         SBtn3 = new JButton(Skill3.getIcon());
         SBtn3.setActionCommand(Skill3.getAbility());
@@ -100,7 +100,7 @@ class SkillTree extends JFrame {
         skillPane.add(SBtn5,Integer.valueOf(2));
 
         JPopupMenu popup6 = new JPopupMenu("heal");
-        JMenuItem description6 = new JMenuItem("Heal 1 hp per round");
+        JMenuItem description6 = new JMenuItem("Heal 4 hp per round");
         popup6.add(description6);
         SBtn6 = new JButton(Skill6.getIcon());
         SBtn6.setActionCommand(Skill6.getAbility());

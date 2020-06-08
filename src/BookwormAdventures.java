@@ -352,9 +352,10 @@ class GamePanel extends JPanel implements KeyListener {
             winCondition = true;
             editBattleLogs("You have won this battle!");
             sPointAdd();
+            applause.play();
             editBattleLogs("YOU HAVE EARNED 1 SP");
         }
-        editBattleLogs(enemiesQueue.get(enemyCounter-1).getName() + " has been defeated!");
+        editBattleLogs(enemiesQueue.get(enemyCounter-1).getName() + " has been defeated");
     }
 
 
@@ -407,10 +408,12 @@ class GamePanel extends JPanel implements KeyListener {
                 }
             }
             if(player.isCritical()){
-                editBattleLogs("Critical Hit!!!");
+                editBattleLogs("Critical Hit");
                 player.resetCritical();
             }
-            editBattleLogs("You have dealt " + damage + " damage to the enemy!");
+            if(currentEnemy != null) {
+                editBattleLogs("You have dealt " + damage + " damage to " + currentEnemy.getName());
+            }
 
 
             if(currentEnemy.getBleeding()) {
@@ -427,7 +430,7 @@ class GamePanel extends JPanel implements KeyListener {
                 if(stunChance != 8) { //if you don't stun
                     int enemyDamage = currentEnemy.doDamage();
                     if(currentEnemy.getWorldBuff().equals("Water Buff")){ //water buff (deal extra damage based on how many words you have played this battle)
-                        enemyDamage += chosenWords.size();
+                        enemyDamage += chosenWords.size()/2;
                     }
                     enemyAttacking=true;//start enemy attack animation
                     player.setHealth(player.getHealth() - enemyDamage); //your health goes down
@@ -451,7 +454,7 @@ class GamePanel extends JPanel implements KeyListener {
         else{ //if you miss, skip your attack phase, go straight to enemy attack phase
             int enemyDamage = currentEnemy.doDamage();
             if(currentEnemy.getWorldBuff().equals("Water Buff")){ //water buff (deal extra damage based on how many words you have played this battle)
-                enemyDamage += chosenWords.size();
+                enemyDamage += chosenWords.size()/2;
             }
             enemyAttacking=true;
             player.setHealth(player.getHealth() - enemyDamage);
@@ -464,7 +467,7 @@ class GamePanel extends JPanel implements KeyListener {
         }
         if(player.isHealing()){
             player.heal();
-            editBattleLogs("Youve been healed for 1 hp");
+            editBattleLogs("You have been healed for 4 hp");
         }
 //
     }
@@ -579,9 +582,9 @@ class GamePanel extends JPanel implements KeyListener {
                 checkVowelsCount ++;
             }
         }
-        if (checkVowelsCount == 0){ //if there are no vowals
+        if (checkVowelsCount <= 2){ //if there are no vowals
             alphabet = letters.randomXletters(16);//reshuffle the letters
-            editBattleLogs("There were no vowels and your board has been shuffled");
+            editBattleLogs("There are less than 2 vowels so the board was shuffled");
         }
     }
     public void trackMousePosition(){ //updates the mouse position
@@ -639,16 +642,16 @@ class GamePanel extends JPanel implements KeyListener {
 
         //health bars
         g.fillRect(25,25,player.getMaxHealth()*2+10,30);
-        g.fillRect(1045,25,210,30);
+        g.fillRect(1045,25,200/currentEnemy.getMaxHealth() * currentEnemy.getMaxHealth()+10,30);
         g.setColor(Color.green);
         g.fillRect(healthBar.x,healthBar.y,player.getHealth()*2,healthBar.height);
         g.fillRect(healthBar2.x,healthBar2.y,200/currentEnemy.getMaxHealth() * currentEnemy.getHealth(),healthBar2.height);
         g.setColor(Color.red);
         g.fillRect(healthBar.x+player.getHealth()*2,healthBar.y,player.getMaxHealth()*2-player.getHealth()*2,healthBar.height);
-        g.fillRect(healthBar2.x+(200/currentEnemy.getMaxHealth()*currentEnemy.getHealth()),healthBar2.y,200-(200/currentEnemy.getMaxHealth()*currentEnemy.getHealth()),healthBar2.height);
+        //g.fillRect(healthBar2.x,healthBar2.y,currentEnemy.getMaxHealth()*2-(200/currentEnemy.getMaxHealth()*currentEnemy.getHealth()),healthBar2.height);
         g.setFont(new Font("Times New Roman",Font.BOLD,20));
-        g.setColor(Color.BLACK);
-        g.drawString(Integer.toString(player.getHealth()),125,47);
+        g.setColor(Color.WHITE);
+        g.drawString(Integer.toString(player.getHealth()),healthBar.width/2 +healthBar.x,47);
 
         if(deathAnimationPlaying) {
             g.drawImage(deathAnimation.getSprite(), deathAnimation.getSpritePosX(), deathAnimation.getSpritePosY(), null);
@@ -671,10 +674,11 @@ class GamePanel extends JPanel implements KeyListener {
         if(currentEnemy!=null) {
             g.setColor(Color.BLACK);
             g.setFont(fantasy);
-            g.drawString(currentEnemy.getName(),1050,20);
+            g.drawString(currentEnemy.getName(),1074,20);
 
             g.setFont(new Font("Times New Roman",Font.BOLD,20));
-            g.drawString(Integer.toString(currentEnemy.getHealth()),1140, 47);
+            g.setColor(Color.WHITE);
+            g.drawString(Integer.toString(currentEnemy.getHealth()),healthBar2.width + healthBar2.x - 150, 47);
         }
 
         //if you press the reset button, all the letters go back to their place
@@ -812,7 +816,7 @@ class GamePanel extends JPanel implements KeyListener {
                     g.drawString("If your word is six or more letters it will do 50 percent more damage", 375, 480);
                 }
                 if (level == 3) {
-                    g.drawString("You have gained this powerup: ", 525, 460);
+                    g.drawString("You have gained this powerup ", 525, 460);
                     g.drawImage(pixelHeart, 620, 480, this);
                     g.setFont(fantasy);
                     g.drawString("You have gained 20 extra max Health", 500, 477);
@@ -848,6 +852,8 @@ class GamePanel extends JPanel implements KeyListener {
                     try {
                         changeLevelMemory();
                         LevelSelect backTo = new LevelSelect();
+                        backgroundMusic.closeSound();
+                        bossSound.closeSound();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

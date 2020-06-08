@@ -26,9 +26,21 @@ class Enemies {
         bleeding=false;
     }
 
-    //enemies deal damage randomly between 1 - 11
+    //enemies deal damage randomly, scaling as the level move on
     public int doDamage(){
-        int damage = randint(1,11);
+        int damage = 0;
+        if(worldBuff.equals("Fire Buff")) {
+            damage = randint(1, 10);
+        }
+        if(worldBuff.equals("Ice Buff")){
+            damage = randint(3,12);
+        }
+        if(worldBuff.equals("Sky Buff")){
+            damage = randint(5,13);
+        }
+        if(worldBuff.equals("Water Buff")){
+            damage = randint(6,10);
+        }
         return damage;
     }
 

@@ -63,8 +63,8 @@ class Player {
         }
 
         if(skillLocks[2]){
-            maxHealth*=1.5;
-            health*=1.5;
+            maxHealth*=1.25;
+            health*=1.25;
         }
         if(skillLocks[5]){
             healing=true;
@@ -110,7 +110,7 @@ class Player {
         int damage = 0;
         damage += word.length();
         if(skillLocks[0]){
-            damage +=5;
+            damage +=3;
         }
         if(skillLocks[4]){//critical
             int x = randint(1,10);
@@ -136,14 +136,14 @@ class Player {
                 }
             }
             if(wordXYZCondition){
-                nativeBattleLogs.add("This attack did twice the amount due to the XYZ treasure");
+                nativeBattleLogs.add("Your XYZ treasure was activated");
                 wordXYZCondition = false;
             }
         }
         if(sixup){ //if you have the six up treasure (deal extra if your word is 6 letters or more
             if(word.length() >= 5){
                 damage = (int) (damage * 1.5);
-                nativeBattleLogs.add("This attack did 1.5 times the amount due to your Big Word treasure!");
+                nativeBattleLogs.add("Your Big Word treasure was activated");
             }
         }
         return damage;
