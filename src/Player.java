@@ -11,10 +11,10 @@ import java.util.Scanner;
 //Dylan Tan and Steven Fung
 //This is the object class for all the players stats
 class Player {
-    private int health,score,maxHealth,attackMultiplier,defense,sPoints;
+    private int health,score,maxHealth,attackMultiplier,defense;
     private String username;
-    private boolean sixup,healthup,xyz; //powerups
-    private ArrayList<String> nativeBattleLogs = new ArrayList<>();//messages to send to GamePanel
+    private boolean sixup,healthup,xyz,arteryAttack,criticalAttack,healing,spikeArmor;//powerups
+    private ArrayList<String> nativeBattleLogs = new ArrayList<>();
     private SpriteList spriteList;
     private Animation animation;
     private boolean [] userStats = new boolean[4];
@@ -25,8 +25,13 @@ class Player {
         sixup = false;
         healthup = false;
         xyz = false;
+        arteryAttack=false;
+        healing=false;
+        spikeArmor=false;
         spriteList=new SpriteList("Pictures/Player",3);
         animation= new Animation(spriteList.getList());
+        criticalAttack=false;
+
         levelMemory();
         skillMemory();
         System.out.println(Arrays.toString(skillLocks));
@@ -52,26 +57,76 @@ class Player {
             maxHealth = h;
         }
 
-        if(skillLocks[0]){
-            attackMultiplier=2;
-            System.out.println("attackmult");
-        }
         if(skillLocks[1]){
             defense=1;
-            System.out.println("defense");
+
         }
+
         if(skillLocks[2]){
             maxHealth*=1.5;
             health*=1.5;
+        }
+        if(skillLocks[5]){
+            healing=true;
+        }
+        if(skillLocks[6]){
+            spikeArmor=true;
         }
 
 
 
     }
+
+    public boolean isSpikeArmor() {
+        return spikeArmor;
+    }
+
+    public boolean isHealing() {
+        return healing;
+    }
+    public void heal(){
+        if(health<maxHealth){
+            health+=1;
+        }
+    }
+
+    public boolean[] getSkillLocks(){
+        return skillLocks;
+    }
+
+    public boolean isArteryAttack() {
+        return arteryAttack;
+    }
+    public boolean isCritical(){
+        return criticalAttack;
+    }
+
+    public void resetCritical(){
+        criticalAttack=false;
+    }
+
+
     public int damage(String word) { //calculates the damage dealt
         int damage = 0;
         damage += word.length();
-        damage *= attackMultiplier;
+        if(skillLocks[0]){
+            damage +=5;
+        }
+        if(skillLocks[4]){//critical
+            int x = randint(1,10);
+            if(x==1){
+                damage*=2;
+            }
+            criticalAttack=true;
+
+        }
+        if(skillLocks[3]){
+            int j = randint(1,5);
+            if(j==1){
+                arteryAttack=true;
+            }
+        }
+
         boolean wordXYZCondition = false;
         if(xyz){ //if you have xyz treausure (deal extra damage if there is an x y or z in the word
             for(int i = 0; i < word.length();i++){

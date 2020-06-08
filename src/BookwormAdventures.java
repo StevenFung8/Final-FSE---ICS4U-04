@@ -89,16 +89,16 @@ class GamePanel extends JPanel implements KeyListener {
     private int BackVal;
     private boolean moveBack,winCondition,exitCondition,loseCondition;
     private BookwormAdventures frame;
-    private Boolean animationPlaying, deathAnimationPlaying;
+    private Boolean animationPlaying, deathAnimationPlaying, attackAnimationPlaying1, attackAnimationPlaying2, attackAnimationPlaying3,enemyAttacking;
     private int stage;
-    private SpriteList deathSpriteList;
-    private Animation deathAnimation;
+    private SpriteList deathSpriteList, atkSpriteLst1, atkSpriteLst2, atkSpriteLst3;
+    private Animation deathAnimation,attackAnimation1,attackAnimation2,attackAnimation3;
     private Point p; //current point on the mouse
     private boolean[] userStats = new boolean[4]; //list to check for level completion
     private boolean [] lockStats = new boolean [4]; //list to check for if that level has been unlocked
     private Font fantasy; //custom font
     private Sound backgroundMusic,bossSound; //music files
-
+    private SoundEffect hurtSound,playerHurtSound,applause,thunderSound,sliceSound;//sfx for attacks
     public GamePanel(int value,String username,BookwormAdventures frame) throws IOException {
         addMouseListener(new clickListener());
         setSize(800,600);
@@ -107,6 +107,7 @@ class GamePanel extends JPanel implements KeyListener {
         winCondition = false;
         exitCondition = false;
         loseCondition = false;
+
         newLevel = new Level(value);
         letters = new Letters();
         level = value;
@@ -136,11 +137,27 @@ class GamePanel extends JPanel implements KeyListener {
         currentMusic = "backgroundMusic";
         deathSpriteList= new SpriteList("Pictures/Enemies/Death Animation",9);
         deathAnimation = new Animation(deathSpriteList.getList());
+        atkSpriteLst1 = new SpriteList("Pictures/Enemies/Attack Animation", 5);
+        atkSpriteLst2 = new SpriteList("Pictures/Enemies/Attack Animation 2",10);
+        atkSpriteLst3 = new SpriteList("Pictures/Enemies/Attack Animation 3", 7);
+        attackAnimation1 = new Animation(atkSpriteLst1.getList());
+        attackAnimation2 = new Animation(atkSpriteLst2.getList());
+        attackAnimation3 = new Animation(atkSpriteLst3.getList());
         for(int i = 0; i<16;i++){
             letterSlotsCondition[i] = true;
         }
         bossSound = new Sound("Music/bossBattle.wav",50);
         backgroundMusic = new Sound("Music/backgroundMusic.wav",50);
+        hurtSound = new SoundEffect("Music/hurtSound.wav");
+        hurtSound.setVolume((float) 0.05);
+        playerHurtSound = new SoundEffect("Music/playerHurtSound.wav");
+        playerHurtSound.setVolume((float)0.5);
+        applause = new SoundEffect("Music/applause.wav");
+        applause.setVolume((float)0.5);
+        thunderSound = new SoundEffect("Music/thunderSound.wav");
+        thunderSound.setVolume((float)0.2);
+        sliceSound = new SoundEffect("Music/sliceSound.wav");
+        sliceSound.setVolume((float)0.5);
         alphabet = letters.randomXletters(16);
         try {
             //Loading Interface Pics
@@ -192,6 +209,11 @@ class GamePanel extends JPanel implements KeyListener {
         }
         animationPlaying=true;
         deathAnimationPlaying=false;
+        attackAnimationPlaying1=false;
+        attackAnimationPlaying2=false;
+        attackAnimationPlaying3=false;
+        enemyAttacking = false;
+
         BackVal=0;
         moveBack=false;
         System.out.println(enemiesQueue);
@@ -210,6 +232,29 @@ class GamePanel extends JPanel implements KeyListener {
         }
         if(deathAnimationPlaying){
             deathAnimation.playOnce();
+        }
+        if(attackAnimationPlaying1){
+            attackAnimation1.playOnce();
+
+        }
+        if(attackAnimationPlaying2){
+            attackAnimation2.playOnce();
+
+        }
+        if(attackAnimationPlaying3){
+            attackAnimation3.playOnce();
+
+        }
+        if(enemyAttacking){
+            currentEnemy.getAtkAnimation().moveLeft();
+            if (currentEnemy.getAtkAnimation().getPosX2()<110){
+                playerHurtSound.play();
+                enemyAttacking=false;
+                currentEnemy.getAtkAnimation().reset();
+                currentEnemy.getAtkAnimation().resetPosX();
+
+
+            }
         }
 
     }
@@ -281,55 +326,101 @@ class GamePanel extends JPanel implements KeyListener {
     public int randint(int low, int high){ //returns a random number
         return (int)(Math.random()*(high-low+1)+low);
     }
+    public void kill() throws IOException {
+        deathAnimationPlaying = true;//boom! he dies
+        enemyCounter++;//move on to the next enemy
+        currentEnemy.setHealth(0);//just so you don't see any negative health
+        if (enemyCounter < enemiesQueue.size()) {//if there are still enemies left in the line
+            currentEnemy = enemiesQueue.get(enemyCounter);//set current enemy to next one
+            if(enemyCounter == enemiesQueue.size()-1){ //if last enemy of the level, play boss music
+                backgroundMusic.stop();
+                bossSound.play();
+                currentMusic = "bossSound";
+            }
+            moveBack = true;
+            if (player.getHealth() + 25 > player.getMaxHealth()) { //when you win a battle, gain 25 health
+                player.setHealth(player.getMaxHealth());
+            }
+            else{
+                player.setHealth(player.getHealth() +25);
+            }
+            editBattleLogs("You have gained 25 health after winning that battle");
+            chosenWords.clear(); //clear the words that you have submitted
+        }
+
+        else { //if there aren't any enemies left
+            winCondition = true;
+            editBattleLogs("You have won this battle!");
+            sPointAdd();
+            editBattleLogs("YOU HAVE EARNED 1 SP");
+        }
+        editBattleLogs(enemiesQueue.get(enemyCounter-1).getName() + " has been defeated!");
+    }
+
+
 
     public void battle(String word) throws IOException { //handles the battle when you submit a word
+        attackAnimationPlaying1=false;
+        attackAnimationPlaying2=false;
+        attackAnimationPlaying3=false;
+        enemyAttacking=false;
+        attackAnimation1.reset();
+        attackAnimation2.reset();
+        attackAnimation3.reset();
+        currentEnemy.getAtkAnimation().reset();
+        currentEnemy.getAtkAnimation().resetPosX();
+
         if(currentEnemy.getWorldBuff().equals("Fire Buff")){ //the fire world buff (enemy deals 5 damage every battle)
             player.setHealth(player.getHealth() - 5);
         }
         int missChance = randint(0,9); //10% chance to miss your attack
         if (missChance != 9) { //if you don't miss
             int damage = 0;
+            if(word.length()>0 && word.length()<=4){
+                attackAnimationPlaying1=true;
+                hurtSound.play();
+            }
+            else if(word.length()>4 && word.length()<=6){
+                attackAnimationPlaying2=true;
+                sliceSound.play();
+            }
+            else {
+                attackAnimationPlaying3=true;
+                thunderSound.play();
+            }
+
             if(currentEnemy.getWorldBuff().equals("Ice Buff")) {
-                damage = (int)(player.damage(word) * 0.8); //ice world buff(your attacks deal 20% less damage)
+                damage = (int)(player.damage(word) * 0.8);//ice world buff(your attacks deal 20% less damage)
+                if(player.isArteryAttack()){
+                    currentEnemy.setBleeding();
+                }
             }
             else{ //when not in the ice world
                 damage = player.damage(word);
             }
             currentEnemy.setHealth(currentEnemy.getHealth() - damage); //take that health away from the enemy
+//            hurtSound.play();
             if(currentEnemy.getWorldBuff().equals("Sky Buff")){ //sky world buff (deal that damage back to you)
                 int chance = randint(0,6); //14% chance
                 if (chance == 5){
                     player.setHealth(player.getHealth() - (int)(damage * 0.5)); //deals half of your damage back to you
                 }
             }
-            editBattleLogs("You have dealt " + damage + " damage to the enemy");
-            if (currentEnemy.getHealth() <= 0) { //if you kill an enemy
-                deathAnimationPlaying = true; //boom! he dies
-                enemyCounter++; //move on to the next enemy
-                currentEnemy.setHealth(0); //just so you don't see any negative health
-                if (enemyCounter < enemiesQueue.size()) { //if there are still enemies left in the line
-                    currentEnemy = enemiesQueue.get(enemyCounter); //set current enemy to next one
-                    if(enemyCounter == enemiesQueue.size()-1){ //if last enemy of the level, play boss music
-                        backgroundMusic.stop();
-                        bossSound.play();
-                        currentMusic = "bossSound";
-                    }
-                    moveBack = true;
-                    if (player.getHealth() + 25 > player.getMaxHealth()) { //when you win a battle, gain 25 health
-                        player.setHealth(player.getMaxHealth());
-                    }
-                    else{
-                        player.setHealth(player.getHealth() +25);
-                    }
-                    editBattleLogs("You have gained 25 health after winning that battle");
-                    chosenWords.clear(); //clear the words that you have submitted
-                }
+            if(player.isCritical()){
+                editBattleLogs("Critical Hit!!!");
+                player.resetCritical();
+            }
+            editBattleLogs("You have dealt " + damage + " damage to the enemy!");
 
-                else { //if there aren't any enemies left
-                    winCondition = true;
-                    editBattleLogs("You have won this battle");
-                }
-                editBattleLogs("This enemy has been defeated");
+
+            if(currentEnemy.getBleeding()) {
+                editBattleLogs("You struck an artery, " + currentEnemy.getName() + " is now bleeding");
+                editBattleLogs(currentEnemy.getName() + " took " +currentEnemy.bleed() + " damage due to blood loss");
+            }
+
+
+            if (currentEnemy.getHealth() <= 0) {//if you kill an enemy
+                kill();
             }
             else { //if you don't kill the enemy yet
                 int stunChance = randint(0,8); //chance to stun enemy
@@ -338,8 +429,18 @@ class GamePanel extends JPanel implements KeyListener {
                     if(currentEnemy.getWorldBuff().equals("Water Buff")){ //water buff (deal extra damage based on how many words you have played this battle)
                         enemyDamage += chosenWords.size();
                     }
+                    enemyAttacking=true;//start enemy attack animation
                     player.setHealth(player.getHealth() - enemyDamage); //your health goes down
                     editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you");
+                    if(player.isSpikeArmor()){
+                        currentEnemy.setHealth(currentEnemy.getHealth()-1);
+                    }
+                    editBattleLogs("The enemy is hurt by your fashionable spike armor");
+                    if(currentEnemy.getHealth()<=0) {
+                        kill();
+                    }
+
+
                 }
                 else{ //if you stun the enemy,they don't do anything
                     editBattleLogs("You have stunned your enemy");
@@ -352,17 +453,20 @@ class GamePanel extends JPanel implements KeyListener {
             if(currentEnemy.getWorldBuff().equals("Water Buff")){ //water buff (deal extra damage based on how many words you have played this battle)
                 enemyDamage += chosenWords.size();
             }
+            enemyAttacking=true;
             player.setHealth(player.getHealth() - enemyDamage);
             editBattleLogs("Your attack missed");
             editBattleLogs("The enemy has dealt " + enemyDamage + " damage to you");
+            if(player.isSpikeArmor()){
+                currentEnemy.setHealth(currentEnemy.getHealth()-1);
+            }
+            editBattleLogs("The enemy is hurt by your fashionable spike armor");
         }
-        if (enemyCounter > enemiesQueue.size()){ //if you have defeated the final enemy
-            currentEnemy = null;
-            winCondition = true;
-            editBattleLogs("YOU HAVE WON");
-            sPointAdd();
-
+        if(player.isHealing()){
+            player.heal();
+            editBattleLogs("Youve been healed for 1 hp");
         }
+//
     }
 
     public void addNotify() {
@@ -377,6 +481,7 @@ class GamePanel extends JPanel implements KeyListener {
         newFile.print(s);
         newFile.println("");
         newFile.print(n+1);
+        newFile.close();
     }
 
     public Animation getAnimation(){
@@ -411,7 +516,6 @@ class GamePanel extends JPanel implements KeyListener {
             this.lockStats[i] = lockStats[i].equals("UNLOCKED");
         }
         inFile.close();
-
     }
     public void changeLevelMemory() throws IOException { //when you win a level
         PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/levelMemory.txt")));
@@ -515,14 +619,14 @@ class GamePanel extends JPanel implements KeyListener {
                 }
             }
         }
-
+        g.drawImage(player.getAnimation().getSprite(),100,130,null);//drawing player
         //drawing all the buttons and black bars on the screen
         g.setColor(Color.BLACK);
         g.setFont(new Font("Comic Sans",Font.PLAIN,20));
         g.drawImage(ResetBtnPic,resetButton.x,resetButton.y,this);
         g.drawImage(SubmitBtnPic,submitButton.x,submitButton.y,this);
         g.drawImage(ExitBtnPic,exitButton.x,exitButton.y,this);
-        g.drawImage(player.getAnimation().getSprite(),100,130,null);
+
         g.fillRect(0, 240, 1280, 20);
         g.fillRect(400, 240, 10, 580);
         g.fillRect(880, 240, 10, 580);
@@ -538,10 +642,10 @@ class GamePanel extends JPanel implements KeyListener {
         g.fillRect(1045,25,210,30);
         g.setColor(Color.green);
         g.fillRect(healthBar.x,healthBar.y,player.getHealth()*2,healthBar.height);
-        g.fillRect(healthBar2.x,healthBar2.y,currentEnemy.getHealth()*2,healthBar2.height);
+        g.fillRect(healthBar2.x,healthBar2.y,200/currentEnemy.getMaxHealth() * currentEnemy.getHealth(),healthBar2.height);
         g.setColor(Color.red);
         g.fillRect(healthBar.x+player.getHealth()*2,healthBar.y,player.getMaxHealth()*2-player.getHealth()*2,healthBar.height);
-        g.fillRect(healthBar2.x,healthBar2.y,currentEnemy.getHealth()*2,healthBar2.height);
+        g.fillRect(healthBar2.x+(200/currentEnemy.getMaxHealth()*currentEnemy.getHealth()),healthBar2.y,200-(200/currentEnemy.getMaxHealth()*currentEnemy.getHealth()),healthBar2.height);
         g.setFont(new Font("Times New Roman",Font.BOLD,20));
         g.setColor(Color.BLACK);
         g.drawString(Integer.toString(player.getHealth()),125,47);
@@ -549,13 +653,26 @@ class GamePanel extends JPanel implements KeyListener {
         if(deathAnimationPlaying) {
             g.drawImage(deathAnimation.getSprite(), deathAnimation.getSpritePosX(), deathAnimation.getSpritePosY(), null);
         }
+        if(attackAnimationPlaying1){
+            g.drawImage(attackAnimation1.getSprite(),attackAnimation1.getSpritePosX(),attackAnimation1.getSpritePosY(),null);
+        }
+        if(attackAnimationPlaying2){
+            g.drawImage(attackAnimation2.getSprite(),attackAnimation2.getSpritePosX()+50,attackAnimation2.getSpritePosY(),null);
+        }
+        if(attackAnimationPlaying3){
+            g.drawImage(attackAnimation3.getSprite(),attackAnimation3.getSpritePosX(),attackAnimation3.getSpritePosY(),null);
+        }
+        if(enemyAttacking){
+            g.drawImage(currentEnemy.getAtkAnimation().getSprite(),currentEnemy.getAtkAnimation().getPosX2(),currentEnemy.getAtkAnimation().getPosY2(),null);
+        }
+
 
         //draw the enemy's name and health
         if(currentEnemy!=null) {
             g.setColor(Color.BLACK);
             g.setFont(fantasy);
             g.drawString(currentEnemy.getName(),1050,20);
-            g.setColor(Color.green);
+
             g.setFont(new Font("Times New Roman",Font.BOLD,20));
             g.drawString(Integer.toString(currentEnemy.getHealth()),1140, 47);
         }
@@ -628,6 +745,9 @@ class GamePanel extends JPanel implements KeyListener {
                 }
                 String currentBattleLog = battleLogs.get(i).substring(0,13);
                 switch (currentBattleLog) { //for different messages i made them different colors
+                    case "Youve been he":
+                        g.setColor(new Color(0, 112, 30));
+                        break;
                     case "The enemy has":
                         g.setColor(Color.blue);
                         break;
@@ -651,6 +771,7 @@ class GamePanel extends JPanel implements KeyListener {
                         break;
                 }
                 g.drawString(battleLogs.get(i), 20, 300 + i * 25);
+
             }
         }
 
@@ -859,7 +980,7 @@ class GamePanel extends JPanel implements KeyListener {
         public void mouseExited(MouseEvent e) {}
         public void mouseReleased(MouseEvent e) {}
         public void mouseClicked(MouseEvent e){
-            System.out.println(player.getAttackMultiplier());
+//            System.out.println(player.getAttackMultiplier());
 
         }
 

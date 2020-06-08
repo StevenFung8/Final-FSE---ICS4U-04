@@ -172,15 +172,9 @@ class LevelSelect extends JFrame {
         layeredPane.add(backBtn,Integer.valueOf(2));
 
         //button for resetting progress (check button 1 for comments)
-        ImageIcon newBtnPic = new ImageIcon("Pictures/A.png");
+        ImageIcon newBtnPic = new ImageIcon("Pictures/StartMenu/ResetBtn.png");
         JButton newBtn = new JButton(newBtnPic);
         newBtn.setBorder(new LineBorder(Color.BLACK));
-        JLabel newLabel = new JLabel();
-        newLabel.setText("reset");
-        newLabel.setBounds(1010,650,100,100);
-        newLabel.setFont(fantasy);
-        newLabel.setForeground(Color.BLACK);
-        layeredPane.add(newLabel,Integer.valueOf(3));
         newBtn.setActionCommand("new");
         newBtn.addActionListener(new LevelSelect.loadLevel());
         newBtn.setBounds(1000,650,100,100);
@@ -251,10 +245,12 @@ class LevelSelect extends JFrame {
                         break;
                     case "new": //reset progress
                         clearLevelMemory();
+                        clearSkillMemory();
                         LevelSelect level = new LevelSelect();
                         titleMusic.stop();
                         titleMusic.closeSound();
                         setVisible(false);
+                        break;
                     case "skill": //skill tree
                         SkillTree sTree = new SkillTree();
                         titleMusic.stop();
@@ -302,6 +298,16 @@ class LevelSelect extends JFrame {
             file.print("LOCKED,");
         }
         file.print("LOCKED");
+        file.close();
+    }
+    public void clearSkillMemory() throws IOException {
+        PrintWriter file = new PrintWriter(new BufferedWriter(new FileWriter("Text Files/skillMemory.txt")));
+        for (int i = 0; i<6;i++){
+            file.print("LOCKED,");
+        }
+        file.print("LOCKED");
+        file.println("");
+        file.print(0);
         file.close();
     }
 
